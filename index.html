@@ -109,7 +109,7 @@
 </style>
 </head>
 <body>
-<!-- VideoSchmiede v2.3 – MuseGen-Vorlage, verbessert: Foto-Serie + Visual-Stile -->
+<!-- VideoSchmiede v2.4 – MuseGen-Vorlage, verbessert: Foto-Serie + Visual-Stile + Comic-Animation (Panel-Pop, Figuren-Boil, Daumenkino) -->
 <header>
   <div class="wrap nav">
     <div class="logo">
@@ -196,11 +196,24 @@
             <option value="1">Ruhig</option>
             <option value="2" selected>Mittel</option>
             <option value="3">Kr&auml;ftig</option>
+            <option value="4">Sehr kr&auml;ftig</option>
           </select>
         </span>
-        <label><input type="checkbox" id="fxShimmer" checked /> Kamera-Zittern (Boil-Look)</label>
+        <label><input type="checkbox" id="fxShimmer" checked /> Kamera-Zittern</label>
         <label><input type="checkbox" id="fxLife" checked /> Atmen &amp; Beat-Puls</label>
         <label><input type="checkbox" id="fxLook" checked /> Vignette &amp; Filmkorn</label>
+        <label><input type="checkbox" id="fxPop" checked /> Panel-Pop (Comic)</label>
+        <label><input type="checkbox" id="fxBoil" checked /> Figuren-Boil (Wackel-Comic)</label>
+        <span class="grp">Bild-Takt:
+          <select id="selFrameRate">
+            <option value="0" selected>Szenen-Modus (Standard)</option>
+            <option value="2">Daumenkino 2 BpS</option>
+            <option value="4">Daumenkino 4 BpS</option>
+            <option value="6">Daumenkino 6 BpS</option>
+            <option value="8">Daumenkino 8 BpS</option>
+            <option value="12">Daumenkino 12 BpS</option>
+          </select>
+        </span>
       </div>
 
       <div class="row">
@@ -260,6 +273,7 @@
     <h3>Fragen &amp; Antworten</h3>
     <div class="tile"><h4>Ist das die MuseGen-Vorlage?</h4><p>Ja &ndash; im Aufbau und Design an die MuseGen-Website angelehnt, aber die Video-Erstellung l&auml;uft hier wirklich: kein Konto, keine Cloud, alles lokal in deinem Browser.</p></div>
     <div class="tile"><h4>Was ist der Visual-Stil-Modus?</h4><p>F&uuml;r schnelle Clips ohne eigenes Bildmaterial: f&uuml;nf audio-reaktive Stile (z.&nbsp;B. Neon-Grid, Spektrum-Ring, Lo-Fi-Fenster) generieren die Bilder live aus der Musik &ndash; Puls, Regen, Partikel und Licht folgen Bass, Mitten und H&ouml;hen deines Songs. Umschaltbar im Studio unter &bdquo;Modus&ldquo;.</p></div>
+    <div class="tile"><h4>Bewegen sich die Figuren in meinen Comic-Panels wirklich?</h4><p>Ehrliche Antwort: Aus einem statischen Panel kann keine Software echte Figurenbewegung erzeugen. Die VideoSchmiede holt das Maximum heraus: Panel-Pop, Figuren-Boil (Wackel-Look wie in Indie-Serien) und Kamerafahrten lassen alles lebendig wirken. Echte Bewegung geht nur mit mehreren Zeichnungen pro Bewegungsphase &ndash; solche Bildfolgen hier laden und unter &bdquo;Bild-Takt&ldquo; einen Daumenkino-Takt w&auml;hlen, dann spielen sie sich als echte Animation ab.</p></div>
     <div class="tile"><h4>Ich habe eine Collage statt Einzelbildern &ndash; was nun?</h4><p>Die VideoSchmiede verarbeitet nur Einzelbilder (jedes Bild = eine Szene). Collagen zuerst mit dem <a href="https://adrgrie-lgtm.github.io/Collage-Spalter/" target="_blank" rel="noopener">Collage-Spalter</a> in Einzelbilder zerlegen (Raster oder freies Zuschneiden), dann die Bilder hier laden.</p></div>
     <div class="tile"><h4>Welches Format hat der Export?</h4><p>WebM (VP8/VP9 + Opus) &ndash; das zeichnet der Browser direkt aus der Vorschau-Leinwand mit Ton auf. Viele Schnittprogramme und Plattformen nehmen WebM an; andernfalls konvertiert es jedes kostenlose Konvertierungstool.</p></div>
     <div class="tile"><h4>Zu viele Bilder f&uuml;r einen kurzen Song?</h4><p>Dann k&uuml;rzt die Timeline die Szenenzahl auf das, was der Song hergibt &ndash; sehr kurze Szenen w&uuml;rden sonst nur flackern. Die Info-Zeile im Studio sagt dir vorher, was passieren wird.</p></div>
@@ -279,7 +293,7 @@
   //=== CORE START (pur, DOM-frei) ===
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function easeIO(t) { t = clamp(t, 0, 1); return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
-  var DYN = { 1: 0.05, 2: 0.10, 3: 0.16 };
+  var DYN = { 1: 0.05, 2: 0.10, 3: 0.16, 4: 0.22 };
   function buildTimeline(D, nSrc) {
     if (!(D > 0) || !isFinite(D)) D = 60;
     var INTRO = clamp(D * 0.05, 3, 10), OUTRO = clamp(D * 0.05, 3, 10);
@@ -474,6 +488,7 @@
   var thumbs = $("thumbs"), cntPhotos = $("cntPhotos"), btnShuffle = $("btnShuffle"), btnClearPhotos = $("btnClearPhotos");
   var audioInfo = $("audioInfo"), au = $("au");
   var selDyn = $("selDyn"), fxShimmer = $("fxShimmer"), fxLife = $("fxLife"), fxLook = $("fxLook");
+  var fxPop = $("fxPop"), fxBoil = $("fxBoil"), selFrameRate = $("selFrameRate");
   var btnBuild = $("btnBuild"), infoLine = $("infoLine");
   var preview = $("preview"), stage = $("stage"), ctx2 = stage.getContext("2d");
   var btnPlay = $("btnPlay"), btnRestart = $("btnRestart"), seek = $("seek"), tLab = $("tLab"), secLab = $("secLab");
@@ -609,12 +624,19 @@
     var n = activeCount();
     if (!n && !ST.audioDur) { infoLine.textContent = ""; infoLine.className = "infoline"; return; }
     if (n && ST.audioDur) {
-      var tl = buildTimeline(ST.audioDur, n);
-      var extra = tl.mult > 1 ? " \u00b7 jedes Bild \u2248" + tl.mult + " Takes" : "";
-      var cap = tl.capped ? " \u00b7 nur " + tl.n + " von " + n + " Szenen passen in den Song" : "";
-      infoLine.textContent = "\u2248 " + tl.n + " Szenen \u00d7 " + tl.shotDur.toFixed(1) + " s" + extra + cap +
-        " \u00b7 Intro " + tl.INTRO.toFixed(1) + " s \u00b7 Outro " + tl.OUTRO.toFixed(1) + " s";
-      infoLine.className = "infoline" + (tl.capped ? " err" : "");
+      var tl = makeTL(ST.audioDur, n);
+      var fps = frameRate();
+      if (fps >= 2) {
+        infoLine.textContent = "Daumenkino: " + n + " Bilder \u00d7 " + fps + " BpS \u00b7 Wiederholung alle " + (n / fps).toFixed(1) + " s" +
+          (tl.capped ? " \u00b7 Song zu kurz f\u00fcr alle Bilder" : "");
+        infoLine.className = "infoline" + (tl.capped ? " err" : "");
+      } else {
+        var extra = tl.mult > 1 ? " \u00b7 jedes Bild \u2248" + tl.mult + " Takes" : "";
+        var cap = tl.capped ? " \u00b7 nur " + tl.n + " von " + n + " Szenen passen in den Song" : "";
+        infoLine.textContent = "\u2248 " + tl.n + " Szenen \u00d7 " + tl.shotDur.toFixed(1) + " s" + extra + cap +
+          " \u00b7 Intro " + tl.INTRO.toFixed(1) + " s \u00b7 Outro " + tl.OUTRO.toFixed(1) + " s";
+        infoLine.className = "infoline" + (tl.capped ? " err" : "");
+      }
     } else if (n) {
       infoLine.textContent = n + " Szenen-Quellen bereit \u2013 jetzt noch Musik laden.";
       infoLine.className = "infoline";
@@ -625,6 +647,16 @@
   }
 
   // ---------- Bauen ----------
+  function frameRate() { return Math.max(0, Number(selFrameRate.value) || 0); }
+  function makeTL(D, nSrc) {
+    var fps = frameRate();
+    if (fps >= 2) {
+      // Daumenkino: Bilder als Schnellfolge, wiederholen sich bis zum Songende
+      var slots = Math.max(1, Math.floor(D * fps));
+      return { D: D, INTRO: 0, OUTRO: 0, XF: 0, shotDur: 1 / fps, n: slots, mult: Math.round(slots / Math.max(1, nSrc) * 10) / 10, capped: slots < nSrc };
+    }
+    return buildTimeline(D, nSrc);
+  }
   function buildSources() {
     var src = [];
     ST.photos.forEach(function (p) { src.push({ img: p.img, rect: { x: 0, y: 0, w: 1, h: 1 } }); });
@@ -638,7 +670,7 @@
     stopEverything();
     ensureGraph();
     ST.sources = buildSources();
-    ST.TL = buildTimeline(ST.audioDur, n);
+    ST.TL = makeTL(ST.audioDur, n);
     preview.classList.add("on");
     au.currentTime = 0;
     play();
@@ -1093,12 +1125,29 @@
       var si = ly.i % ST.sources.length;
       var s = ST.sources[si];
       img = s.img; rect = s.rect;
-      cam = shotCam(ly.i, Number(selDyn.value));
-      p = clamp((t - (tl.INTRO + ly.i * tl.shotDur)) / tl.shotDur, 0, 1);
+      if (frameRate() >= 2) {
+        // Daumenkino: feste, zentrierte Fenstereinstellung – die Bildfolge selbst ist die Bewegung
+        cam = { z0: 1, z1: 1, dir: 1 };
+        p = 0.5;
+      } else {
+        cam = shotCam(ly.i, Number(selDyn.value));
+        p = clamp((t - (tl.INTRO + ly.i * tl.shotDur)) / tl.shotDur, 0, 1);
+      }
     }
     var kb = kenBurns(rect, img.naturalWidth, img.naturalHeight, p, cam, 16 / 9);
     ctx2.globalAlpha = ly.a;
-    ctx2.drawImage(img, kb.sx, kb.sy, kb.sw, kb.sh, 0, 0, 1280, 720);
+    if (fxBoil.checked) {
+      // Figuren-Boil: Bild in 8 Streifen zerlegen, Streifen im 120-ms-Takt einzeln verschieben (Line-Boil wie in Indie-Serien)
+      var tickB = Math.floor(au.currentTime * 1000 / 120);
+      var rngB = mulberry32(hashSeed(tickB + "b" + ly.i + ly.k));
+      var NB = 8, stepY = kb.sh / NB, dstY = 720 / NB;
+      for (var rB = 0; rB < NB; rB++) {
+        var oxB = (rngB() - 0.5) * 4.4;
+        ctx2.drawImage(img, kb.sx, kb.sy + rB * stepY, kb.sw, stepY + 1, oxB - 3, rB * dstY - 1, 1286, dstY + 2);
+      }
+    } else {
+      ctx2.drawImage(img, kb.sx, kb.sy, kb.sw, kb.sh, 0, 0, 1280, 720);
+    }
     ctx2.globalAlpha = 1;
   }
   var seekActive = false;
@@ -1141,6 +1190,15 @@
       }
       ox = ST.jx; oy = ST.jy; rot += ST.jr;
     }
+    if (fxPop.checked && frameRate() < 2) {
+      // Panel-Pop: jede neue Szene startet 10 % groesser und settelt in 0,6 s mit leichtem Schwung ein
+      var pdT = t - segStart(tl, t);
+      if (pdT >= 0 && pdT < 0.6) {
+        var pv = 1 - clamp(pdT / 0.6, 0, 1);
+        s *= 1 + 0.10 * pv * pv;
+        rot += 0.011 * pv * ((Math.floor((t - tl.INTRO) / tl.shotDur) % 2) ? -1 : 1);
+      }
+    }
     ctx2.save();
     ctx2.translate(W / 2 + ox, H / 2 + oy);
     ctx2.scale(s, s);
@@ -1167,7 +1225,7 @@
     else if (t >= tl.D - tl.OUTRO) sl2 = "Outro";
     else {
       var idx = Math.min(tl.n - 1, Math.floor((t - tl.INTRO) / tl.shotDur));
-      sl2 = "Szene " + (idx + 1) + " / " + tl.n;
+      sl2 = frameRate() >= 2 ? "Bild " + ((idx % ST.sources.length) + 1) + " / " + ST.sources.length : "Szene " + (idx + 1) + " / " + tl.n;
     }
     secLab.textContent = sl2;
   }
@@ -1275,6 +1333,7 @@
     updateInfo();
   }
   selMode.addEventListener("change", function () { stopEverything(); applyMode(); });
+  selFrameRate.addEventListener("change", function () { stopEverything(); updateInfo(); });
   selStyle.addEventListener("change", function () {
     stopEverything();
     ST.scene = null; ST.sceneStyle = "";
