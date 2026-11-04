@@ -15,5 +15,7 @@ Musikvideo-Studio: Einzelbilder + Song rein – fertig ist ein animiertes Musikv
 2. Einzelbilder reinziehen, Musik laden
 3. „Video zusammenbauen“ → Vorschau prüfen → „Video exportieren (WebM)“
 
-## Hinweis zu Collagen
-Collagen (mehrere Panels in einem Bild) werden nicht verarbeitet – dafür ist ein eigenes Zusatz-Tool geplant, das Collagen automatisch in Einzelbilder zerlegt. Bis dahin: Panels selbst zuschneiden und die Bilder einzeln laden.
+## Zusatz-Tool: Collage-Spalter (`spalter.html`)
+Collagen (mehrere Panels in einem Bild) zerlegt der Collage-Spalter in einzelne JPGs – Raster bis 12×12, Rand-Anteil in Prozent abschneiden (z. B. 5 % für weiße Stege), Panels einzeln an/abwählen, Speicherung in Original-Pixelgröße und Lesereihenfolge (`name_panel-01.jpg` …). Anschließend die Einzelbilder einfach in die VideoSchmiede ziehen.
+
+**Workflow:** Collage → `spalter.html` (Raster festlegen, JPGs speichern) → `index.html` (Bilder + Musik, Video bauen)
