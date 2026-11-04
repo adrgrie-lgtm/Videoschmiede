@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VideoSchmiede – dein Musikvideo aus Bildern</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0b0914; --bg2: #110d1f; --card: #151027; --line: rgba(255,255,255,0.08);
+    --txt: #edeae4; --mut: #9aa0ac; --amb: #8b5cf6; --amb2: #c4b5fd;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: radial-gradient(1200px 600px at 70% -10%, rgba(139,92,246,0.10), transparent 60%), var(--bg);
+    color: var(--txt); font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.6; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 22px; }
+  header { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(10px);
+    background: rgba(11,9,20,0.80); border-bottom: 1px solid var(--line); }
+  .nav { display: flex; align-items: center; gap: 26px; padding: 14px 0; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: 0.02em; }
+  .logo svg { width: 26px; height: 26px; }
+  .nav a { color: var(--mut); text-decoration: none; font-size: 14px; }
+  .nav a:hover { color: var(--amb2); }
+  .nav .cta { margin-left: auto; }
+  .btn { display: inline-block; border: none; cursor: pointer; font-weight: 700; border-radius: 10px;
+    background: linear-gradient(180deg, var(--amb2), var(--amb)); color: #1b1130; padding: 11px 20px; font-size: 15px;
+    box-shadow: 0 6px 22px rgba(139,92,246,0.25); transition: transform 0.15s ease, box-shadow 0.15s ease;
+    font-family: inherit; text-decoration: none; }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(139,92,246,0.35); }
+  .btn:disabled { opacity: 0.45; cursor: default; transform: none; box-shadow: none; }
+  .btn.ghost { background: transparent; color: var(--amb2); border: 1px solid rgba(139,92,246,0.5); box-shadow: none; }
+  .btn.small { padding: 7px 14px; font-size: 13px; border-radius: 8px; }
+  .hero { padding: 66px 0 34px; text-align: center; }
+  .hero h1 { font-size: clamp(32px, 6vw, 58px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.12; }
+  .hero h1 em { font-style: normal; background: linear-gradient(90deg, var(--amb2), var(--amb) 70%);
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p.sub { color: var(--mut); font-size: clamp(15px, 2vw, 18.5px); max-width: 660px; margin: 16px auto 0; }
+  .hero .tags { margin-top: 20px; color: #6d7380; font-size: 12.5px; letter-spacing: 0.14em; text-transform: uppercase; }
+  .badge { display: inline-block; margin-bottom: 18px; padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--amb2); border: 1px solid rgba(139,92,246,0.45); background: rgba(139,92,246,0.12); }
+  .ctaRow { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
+  .studio { margin: 30px 0; }
+  .card { background: linear-gradient(180deg, var(--card), var(--bg2)); border: 1px solid var(--line);
+    border-radius: 20px; padding: 26px; box-shadow: 0 24px 60px rgba(0,0,0,0.45); }
+  .card h2 { font-size: 15px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amb2); margin-bottom: 14px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .tab { flex: 1; text-align: center; padding: 10px 8px; border-radius: 10px; border: 1px solid var(--line);
+    background: rgba(255,255,255,0.03); color: var(--mut); cursor: pointer; font-weight: 600; font-size: 14px;
+    font-family: inherit; transition: all 0.15s ease; }
+  .tab.on { background: rgba(139,92,246,0.14); border-color: rgba(139,92,246,0.55); color: var(--amb2); }
+  .pane { display: none; }
+  .pane.on { display: block; }
+  .zone { border: 2px dashed rgba(139,92,246,0.35); border-radius: 14px; background: rgba(139,92,246,0.04);
+    padding: 26px 18px; text-align: center; cursor: pointer; transition: all 0.15s ease; }
+  .zone:hover, .zone.drag { border-color: var(--amb); background: rgba(139,92,246,0.10); }
+  .zone .big { font-size: 30px; }
+  .zone p { color: var(--mut); font-size: 14px; margin-top: 6px; }
+  .zone b { color: var(--amb2); font-size: 15px; display: block; }
+  .thumbs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .thumb { position: relative; width: 86px; height: 62px; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--line); background: #000; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb button { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%;
+    border: none; background: rgba(0,0,0,0.7); color: #ff9d7a; font-size: 12px; cursor: pointer; line-height: 1; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .hint { color: #6d7380; font-size: 13px; }
+  .markwrap { margin-top: 14px; display: none; }
+  .markwrap.on { display: block; }
+  canvas#mark { width: 100%; border-radius: 12px; border: 1px solid var(--line); display: block; cursor: crosshair; touch-action: none; }
+  .markbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+  .markbar .cnt { font-size: 14px; color: var(--amb2); font-weight: 700; }
+  select { background: rgba(0,0,0,0.4); color: var(--txt); border: 1px solid var(--line); border-radius: 8px;
+    padding: 6px 10px; font-size: 13.5px; font-family: inherit; }
+  .opts { display: flex; flex-wrap: wrap; gap: 16px 26px; margin: 20px 0 18px; padding: 16px 18px;
+    border: 1px solid var(--line); border-radius: 12px; background: rgba(0,0,0,0.25); }
+  .opts label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--mut); cursor: pointer; }
+  .opts input[type=checkbox] { accent-color: var(--amb); width: 16px; height: 16px; }
+  .opts .grp { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--mut); }
+  .infoline { margin-top: 14px; font-size: 14px; color: var(--amb2); min-height: 22px; }
+  .infoline.err { color: #ff9d7a; }
+  .preview { display: none; margin-top: 22px; }
+  .preview.on { display: block; }
+  canvas#stage { width: 100%; border-radius: 12px; border: 1px solid var(--line); display: block; background: #000; }
+  .pbar { display: flex; align-items: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+  input[type=range] { flex: 1; min-width: 160px; accent-color: var(--amb); }
+  .tlab { font-size: 13px; color: var(--mut); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .slab { font-size: 13.5px; color: var(--amb2); font-weight: 700; white-space: nowrap; }
+  .rec { display: none; align-items: center; gap: 7px; font-size: 13px; color: #ff9d7a; font-weight: 700; }
+  .rec.on { display: inline-flex; }
+  .rec i { width: 10px; height: 10px; border-radius: 50%; background: #ff5a3c; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.25; } }
+  section.block { padding: 50px 0; }
+  section.block h3 { font-size: clamp(23px, 3.2vw, 32px); font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px; }
+  section.block p.lead { color: var(--mut); max-width: 660px; margin-bottom: 28px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+  .tile { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .tile h4 { font-size: 16px; margin: 10px 0 6px; }
+  .tile p { color: var(--mut); font-size: 14px; }
+  .tile .num { font-size: 13px; font-weight: 800; color: var(--amb); letter-spacing: 0.18em; }
+  .tile code { background: rgba(139,92,246,0.12); color: var(--amb2); padding: 1px 6px; border-radius: 5px; font-size: 12.5px; }
+  .faq .tile { margin-bottom: 12px; }
+  .faq .tile p { color: var(--txt); opacity: 0.85; }
+  footer { border-top: 1px solid var(--line); padding: 30px 0 44px; color: #6d7380; font-size: 13.5px; }
+  footer .heart { color: var(--amb); }
+  a.dl { display: none; }
+  a.dl.on { display: inline-block; }
+  @media (max-width: 640px) { .hero { padding-top: 42px; } .nav a:not(.cta) { display: none; } }
+</style>
+</head>
+<body>
+<!-- VideoSchmiede v2.1 – Verbesserte MuseGen-Vorlage -->
+<header>
+  <div class="wrap nav">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="15" height="14" rx="2.5" stroke="#8b5cf6" stroke-width="1.8"/><path d="M17.5 10.5l4.5-2.5v8l-4.5-2.5z" fill="#c4b5fd"/><path d="M6.5 12.2l2.4 2.4 4.6-4.8" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+      VideoSchmiede
+    </div>
+    <a href="#studio">Studio</a>
+    <a href="#how">So geht's</a>
+    <a href="#features">Funktionen</a>
+    <a href="#faq">FAQ</a>
+    <a href="#studio" class="btn cta">Video erstellen</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="badge">&#127911; Create-Music-Video-Studio &ndash; verbesserte Vorlage</div>
+    <h1>Sag es im Song.<br /><em>Zeig es im Video.</em></h1>
+    <p class="sub">Song rein, Einzelbilder dazu &ndash; das Studio baut daraus ein animiertes Musikvideo mit Kamerafahrten, weichen Blenden und Beat-Puls. Kein Konto, kein Upload: alles l&auml;uft lokal in deinem Browser, inklusive Video-Export mit Ton.</p>
+    <div class="ctaRow">
+      <a href="#studio" class="btn">&#127909; Direkt ins Studio</a>
+      <a href="#how" class="btn ghost">So geht's in 3 Schritten</a>
+    </div>
+    <div class="tags">Bilder rein &middot; Musik rein &middot; Video raus &middot; 100&nbsp;% lokal</div>
+  </div>
+
+  <section class="block" id="how">
+    <h3>So entsteht dein Musikvideo</h3>
+    <p class="lead">Drei Schritte, keine Vorkenntnisse n&ouml;tig &ndash; vom Material zum fertigen Clip in Minuten.</p>
+    <div class="grid">
+      <div class="tile"><div class="num">01</div><h4>Material w&auml;hlen</h4><p>Einzelbilder (JPG/PNG/WEBP) reinziehen &ndash; jedes wird eine Filmszene. Collagen? Daf&uuml;r gibt es ein eigenes Zusatz-Tool, das sie automatisch in Einzelbilder zerlegt.</p></div>
+      <div class="tile"><div class="num">02</div><h4>Musik dazu</h4><p>MP3, WAV, OGG oder M4A reinziehen. Die Songl&auml;nge bestimmt die Timeline, der Beat steuert Puls und Atmung des Videos. Leere Dateien (z.&nbsp;B. direkt aus Messenger-Apps gezogen) werden sauber erkannt und gemeldet.</p></div>
+      <div class="tile"><div class="num">03</div><h4>Bauen &amp; exportieren</h4><p>Ein Klick baut die Timeline und startet die Vorschau. Der Export spielt das Video einmal komplett durch und zeichnet es mit Ton als WebM auf &ndash; fertig zum Hochladen.</p></div>
+    </div>
+  </section>
+
+  <div class="studio" id="studio">
+    <div class="card">
+      <h2>1 &middot; Material</h2>
+      <div class="pane on" id="panePhotos">
+        <div class="zone" id="zonePhotos">
+          <div class="big">&#128247;</div>
+          <b>Bilder hierher ziehen oder klicken</b>
+          <p>Mehrere Fotos (JPG/PNG/WEBP) &ndash; jedes wird eine Filmszene. Reihenfolge = Reihenfolge im Video.</p>
+        </div>
+        <input type="file" id="filePhotos" accept="image/*" multiple hidden />
+        <div class="row" style="margin-top:12px;">
+          <button class="btn ghost small" id="btnShuffle" disabled>&#128256; Reihenfolge mischen</button>
+          <button class="btn ghost small" id="btnClearPhotos" disabled>Leeren</button>
+          <span class="hint" id="cntPhotos">Noch keine Bilder</span>
+        </div>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+
+      <div class="zone" id="zoneAudio" style="margin-top:18px;">
+        <div class="big">&#127925;</div>
+        <b>Musik hierher ziehen oder klicken</b>
+        <p>MP3/WAV/OGG/M4A &ndash; die L&auml;nge des Songs bestimmt die Timeline des Videos.</p>
+      </div>
+      <input type="file" id="fileAudio" accept="audio/*" hidden />
+      <p class="hint" id="audioInfo" style="margin-top:10px;">Noch keine Musik geladen.</p>
+
+      <div class="opts">
+        <span class="grp">Kamera-Dynamik:
+          <select id="selDyn">
+            <option value="1">Ruhig</option>
+            <option value="2" selected>Mittel</option>
+            <option value="3">Kr&auml;ftig</option>
+          </select>
+        </span>
+        <label><input type="checkbox" id="fxShimmer" checked /> Kamera-Zittern (Boil-Look)</label>
+        <label><input type="checkbox" id="fxLife" checked /> Atmen &amp; Beat-Puls</label>
+        <label><input type="checkbox" id="fxLook" checked /> Vignette &amp; Filmkorn</label>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="btnBuild">&#127909; Video zusammenbauen</button>
+        <span class="hint">Baut die Timeline aus Bildern + Musik und startet die Vorschau.</span>
+      </div>
+      <div class="infoline" id="infoLine"></div>
+    </div>
+
+    <div class="card preview" id="preview">
+      <h2>2 &middot; Vorschau &amp; Export</h2>
+      <canvas id="stage" width="1280" height="720"></canvas>
+      <div class="pbar">
+        <button class="btn small" id="btnPlay">&#9654;</button>
+        <button class="btn ghost small" id="btnRestart">&#8635;</button>
+        <input type="range" id="seek" min="0" max="1000" value="0" />
+        <span class="tlab" id="tLab">0:00 / 0:00</span>
+        <span class="slab" id="secLab">&mdash;</span>
+        <span class="rec" id="recDot"><i></i>AUFNAHME</span>
+      </div>
+      <div class="row" style="margin-top:14px;">
+        <button class="btn" id="btnRec">&#11035; Video exportieren (WebM)</button>
+        <button class="btn ghost" id="btnStopRec" style="display:none;">&#9989; Aufnahme beenden</button>
+        <a class="btn ghost dl" id="dlLink" download="musikvideo.webm">&#11015; Video speichern</a>
+        <span class="hint">Der Export spielt das Video einmal komplett durch und zeichnet es mit Ton auf.</span>
+      </div>
+      <p class="hint" style="margin-top:10px;">W&auml;hrend der Aufnahme: Tab im Vordergrund lassen, damit nichts ruckelt.</p>
+    </div>
+  </div>
+
+  <section class="block" id="features">
+    <h3>Funktionen des Video-Studios</h3>
+    <p class="lead">Was die Vorlage nur versprochen hat, funktioniert hier wirklich &ndash; komplett lokal und ohne Anmeldung.</p>
+    <div class="grid">
+      <div class="tile"><div class="num">FOTO</div><h4>Foto-Serie-Modus</h4><p>Mehrere Bilder reinziehen &ndash; jedes wird eine Filmszene, Reihenfolge frei mischbar. Lange Songs bekommen automatisch mehrere Takes pro Bild.</p></div>
+      <div class="tile"><div class="num">REIHEN</div><h4>Reihenfolge &amp; Feinschliff</h4><p>Bilder frei mischen oder einzeln per Klick entfernen. Passt der Song nicht zu allen Szenen, k&uuml;rzt die Timeline automatisch auf das, was der Song hergibt.</p></div>
+      <div class="tile"><div class="num">BEAT</div><h4>Beat-Puls &amp; Atmung</h4><p>Der Spectrum-Analyzer des Songs treibt Gr&ouml;&szlig;enpuls und Atmung des Bildes &ndash; das Video bewegt sich im Takt deiner Musik.</p></div>
+      <div class="tile"><div class="num">CAM</div><h4>Ken-Burns-Kamerafahrten</h4><p>Jede Szene f&auml;hrt eine berechnete Kamerabewegung mit Zoom &ndash; mathematisch geklemmt, damit das Fenster nie aus dem Bild l&auml;uft.</p></div>
+      <div class="tile"><div class="num">MP3</div><h4>Robuster Musik-Import</h4><p>0-Byte-Dateien aus Messenger-Apps werden erkannt und klar gemeldet; MP3s ohne Dauerangabe bekommen einen automatischen Workaround.</p></div>
+      <div class="tile"><div class="num">WEBM</div><h4>Export mit Ton</h4><p>Der Browser zeichnet die Vorschau mit Musik als WebM auf &ndash; kein Server, kein Upload, direkt speicherbar.</p></div>
+    </div>
+  </section>
+
+  <section class="block" id="logik">
+    <h3>Die Logik dahinter</h3>
+    <p class="lead">Vier Bausteine stecken in jedem Video &ndash; hier offen erkl&auml;rt.</p>
+    <div class="grid">
+      <div class="tile"><div class="num">01</div><h4>Die Musik ist die Uhr</h4><p>Der Player treibt nichts &ndash; jede Frame fragt <code>audio.currentTime</code> ab und rendert den Zustand zu genau dieser Sekunde. Dadurch driftet nichts auseinander, Seeking ist gratis.</p></div>
+      <div class="tile"><div class="num">02</div><h4>Timeline-R&uuml;ckw&auml;rts</h4><p>Aus der Songl&auml;nge werden Intro und Outro abgezogen, der Rest wird gleichm&auml;&szlig;ig auf alle Szenen verteilt: <code>Szenendauer = (D &minus; Intro &minus; Outro) / n</code>. Lange Songs bekommen daf&uuml;r automatisch mehrere Takes pro Bild.</p></div>
+      <div class="tile"><div class="num">03</div><h4>Ken-Burns-Fenster</h4><p>Jede Szene ist ein Ausschnitts-Fenster, das durchs Bild f&auml;hrt (abwechselnd links&harr;rechts bzw. oben&harr;unten) und dabei leicht zoomt. Das Fenster wird mathematisch so geklemmt, dass es die Bildgrenzen nie verl&auml;sst.</p></div>
+      <div class="tile"><div class="num">04</div><h4>Leben &uuml;ber den Effekt-Layer</h4><p>&Uuml;ber allem liegt ein Transform-Schicht: Atmen (langsame Gr&ouml;&szlig;enwelle), Pop beim Schnitt, Beat-Puls aus dem Spectrum-Analyzer des Songs, dazu optionales Kamera-Zittern, Vignette und Filmkorn.</p></div>
+    </div>
+  </section>
+
+  <section class="block faq" id="faq">
+    <h3>Fragen &amp; Antworten</h3>
+    <div class="tile"><h4>Ist das die MuseGen-Vorlage?</h4><p>Ja &ndash; im Aufbau und Design an die MuseGen-Website angelehnt, aber die Video-Erstellung l&auml;uft hier wirklich: kein Konto, keine Cloud, alles lokal in deinem Browser.</p></div>
+    <div class="tile"><h4>Ich habe eine Collage statt Einzelbildern &ndash; was nun?</h4><p>Die VideoSchmiede verarbeitet nur Einzelbilder (jedes Bild = eine Szene). F&uuml;r Collagen entsteht gerade ein eigenes Zusatz-Tool, das die Panels automatisch in Einzelbilder zerlegt &ndash; bis dahin die Panels selbst zuschneiden und die Bilder einzeln laden.</p></div>
+    <div class="tile"><h4>Welches Format hat der Export?</h4><p>WebM (VP8/VP9 + Opus) &ndash; das zeichnet der Browser direkt aus der Vorschau-Leinwand mit Ton auf. Viele Schnittprogramme und Plattformen nehmen WebM an; andernfalls konvertiert es jedes kostenlose Konvertierungstool.</p></div>
+    <div class="tile"><h4>Zu viele Bilder f&uuml;r einen kurzen Song?</h4><p>Dann k&uuml;rzt die Timeline die Szenenzahl auf das, was der Song hergibt &ndash; sehr kurze Szenen w&uuml;rden sonst nur flackern. Die Info-Zeile im Studio sagt dir vorher, was passieren wird.</p></div>
+    <div class="tile"><h4>Verl&auml;sst was meinen Browser?</h4><p>Nein. Bilder, Musik und Rendering bleiben komplett lokal &ndash; kein Upload, kein Server, kein Konto. Der Export entsteht ebenfalls auf deinem Ger&auml;t.</p></div>
+  </section>
+
+  <footer>
+    VideoSchmiede &mdash; verbesserte Vorlage im MuseGen-Design. Geschnitten mit <span class="heart">&#9834;</span> und der Web Audio API. Kein Server, kein Tracking, keine Uploads.
+  </footer>
+</div>
+
+<audio id="au" hidden></audio>
+
+<script>
+(function () {
+  "use strict";
+  //=== CORE START (pur, DOM-frei) ===
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function easeIO(t) { t = clamp(t, 0, 1); return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+  var DYN = { 1: 0.05, 2: 0.10, 3: 0.16 };
+  function buildTimeline(D, nSrc) {
+    if (!(D > 0) || !isFinite(D)) D = 60;
+    var INTRO = clamp(D * 0.05, 3, 10), OUTRO = clamp(D * 0.05, 3, 10);
+    var span = D - INTRO - OUTRO;
+    if (span < D * 0.4) { INTRO = D * 0.1; OUTRO = D * 0.1; span = D * 0.8; }
+    var desired = Math.ceil(span / 14);
+    var n = Math.max(nSrc, Math.min(desired, nSrc * 30));
+    var maxN = Math.max(1, Math.floor(span / 1.0));
+    var capped = false;
+    if (n > maxN) { n = maxN; capped = true; }
+    var mult = Math.round(n / nSrc * 10) / 10;
+    var shotDur = span / n;
+    var XF = clamp(shotDur * 0.3, 0.8, 2.2);
+    XF = Math.min(XF, shotDur * 0.5);
+    return { D: D, INTRO: INTRO, OUTRO: OUTRO, XF: XF, shotDur: shotDur, n: n, mult: mult, capped: capped };
+  }
+  function shotCam(i, dyn) {
+    var span = DYN[dyn] || 0.10;
+    var zin = i % 2 === 0;
+    return { z0: zin ? 1.0 : 1.0 + span, z1: zin ? 1.0 + span : 1.0, dir: i % 4 < 2 ? 1 : -1 };
+  }
+  function kenBurns(rect, imgW, imgH, p, cam, viewA) {
+    var rx = rect.x * imgW, ry = rect.y * imgH, rw = rect.w * imgW, rh = rect.h * imgH;
+    if (rw < 4 || rh < 4) { rx = 0; ry = 0; rw = imgW; rh = imgH; }
+    var w0 = rh * viewA, h0 = rh;
+    if (w0 > rw) { w0 = rw; h0 = w0 / viewA; }
+    var zmax = Math.max(cam.z0, cam.z1);
+    var pxm = rw - w0 / zmax, pym = rh - h0 / zmax;
+    var e = easeIO(p);
+    var z = cam.z0 + (cam.z1 - cam.z0) * e;
+    if (z < 1) z = 1;
+    var w = w0 / z, h = h0 / z;
+    if (pxm >= pym) {
+      var s0 = rw - w0 / cam.z0, s1 = rw - w0 / cam.z1;
+      var f = cam.dir > 0 ? 0 : 1;
+      var x0 = s0 > 0.5 ? s0 * f : s0 / 2;
+      var x1 = s1 > 0.5 ? s1 * (1 - f) : s1 / 2;
+      var sx = x0 + (x1 - x0) * e;
+      return { sx: rx + clamp(sx, 0, rw - w), sy: ry + (rh - h) / 2, sw: w, sh: h };
+    }
+    var t0 = rh - h0 / cam.z0, t1 = rh - h0 / cam.z1;
+    var fy = cam.dir > 0 ? 0 : 1;
+    var y0 = t0 > 0.5 ? t0 * fy : t0 / 2;
+    var y1 = t1 > 0.5 ? t1 * (1 - fy) : t1 / 2;
+    var sy = y0 + (y1 - y0) * e;
+    return { sx: rx + (rw - w) / 2, sy: ry + clamp(sy, 0, rh - h), sw: w, sh: h };
+  }
+  function layerStack(tl, t) {
+    var L = [];
+    if (t < tl.INTRO + tl.XF) {
+      var ia = t > tl.INTRO ? clamp(1 - (t - tl.INTRO) / tl.XF, 0, 1) : 1;
+      if (ia > 0.001) L.push({ k: "intro", i: -1, a: ia });
+    }
+    if (t >= tl.D - tl.OUTRO) {
+      L.push({ k: "shot", i: tl.n - 1, a: 1 });
+      L.push({ k: "outro", i: -1, a: clamp((t - (tl.D - tl.OUTRO)) / tl.XF, 0, 1) });
+    } else if (t >= tl.INTRO) {
+      var u = t - tl.INTRO;
+      var i = Math.min(tl.n - 1, Math.floor(u / tl.shotDur));
+      var t0 = tl.INTRO + i * tl.shotDur;
+      if (i > 0 && t - t0 < tl.XF) L.push({ k: "shot", i: i - 1, a: 1 });
+      var a = i > 0 && t - t0 < tl.XF ? clamp((t - t0) / tl.XF, 0, 1) : 1;
+      L.push({ k: "shot", i: i, a: a });
+    }
+    return L;
+  }
+  function segStart(tl, t) {
+    if (t < tl.INTRO) return 0;
+    if (t >= tl.D - tl.OUTRO) return tl.D - tl.OUTRO;
+    var i = Math.min(tl.n - 1, Math.floor((t - tl.INTRO) / tl.shotDur));
+    return tl.INTRO + i * tl.shotDur;
+  }
+  function fmtTime(s) {
+    if (!isFinite(s) || s < 0) s = 0;
+    var m = Math.floor(s / 60), r = Math.floor(s % 60);
+    return m + ":" + (r < 10 ? "0" : "") + r;
+  }
+  //=== CORE END ===
+
+  // ---------- Zustand ----------
+  var ST = {
+    photos: [],
+    audioURL: null,
+    audioName: "",
+    audioDur: 0,
+    TL: null,
+    sources: [],
+    playing: false,
+    recording: false,
+    beatSm: 0,
+    jx: 0, jy: 0, jr: 0, lastTick: -1,
+    grainA: null, grainB: null, vig: null
+  };
+
+  // ---------- DOM ----------
+  var $ = function (id) { return document.getElementById(id); };
+  var zonePhotos = $("zonePhotos"), zoneAudio = $("zoneAudio");
+  var filePhotos = $("filePhotos"), fileAudio = $("fileAudio");
+  var thumbs = $("thumbs"), cntPhotos = $("cntPhotos"), btnShuffle = $("btnShuffle"), btnClearPhotos = $("btnClearPhotos");
+  var audioInfo = $("audioInfo"), au = $("au");
+  var selDyn = $("selDyn"), fxShimmer = $("fxShimmer"), fxLife = $("fxLife"), fxLook = $("fxLook");
+  var btnBuild = $("btnBuild"), infoLine = $("infoLine");
+  var preview = $("preview"), stage = $("stage"), ctx2 = stage.getContext("2d");
+  var btnPlay = $("btnPlay"), btnRestart = $("btnRestart"), seek = $("seek"), tLab = $("tLab"), secLab = $("secLab");
+  var btnRec = $("btnRec"), btnStopRec = $("btnStopRec"), dlLink = $("dlLink"), recDot = $("recDot");
+
+  // ---------- Audio-Graph ----------
+  var AC = null, an = null, msDest = null, elSrc = null, freqData = null;
+  function ensureGraph() {
+    if (!AC) {
+      var A = window.AudioContext || window.webkitAudioContext;
+      AC = new A();
+      elSrc = AC.createMediaElementSource(au);
+      an = AC.createAnalyser();
+      an.fftSize = 256;
+      an.smoothingTimeConstant = 0.7;
+      msDest = AC.createMediaStreamDestination();
+      elSrc.connect(an);
+      an.connect(AC.destination);
+      an.connect(msDest);
+      freqData = new Uint8Array(an.frequencyBinCount);
+    }
+    if (AC.state === "suspended") AC.resume();
+  }
+
+  // ---------- Dateien ----------
+  function kindOf(f) {
+    var t = f && f.type ? f.type : "";
+    if (t.indexOf("image/") === 0) return "img";
+    if (t.indexOf("audio/") === 0) return "aud";
+    var n = ((f && f.name) || "").toLowerCase(), d = n.lastIndexOf(".");
+    var ext = d < 0 ? "" : n.slice(d);
+    if (".jpg.jpeg.png.webp.gif.bmp.avif.jfif.".indexOf(ext + ".") >= 0) return "img";
+    if (".mp3.wav.ogg.oga.m4a.aac.flac.opus.".indexOf(ext + ".") >= 0) return "aud";
+    return "";
+  }
+  document.addEventListener("dragover", function (e) { e.preventDefault(); });
+  document.addEventListener("drop", function (e) { e.preventDefault(); });
+  function stopEverything() {
+    if (ST.recording) finishRec();
+    au.pause();
+    ST.playing = false;
+    btnPlay.innerHTML = "&#9654;";
+  }
+  function addPhotos(files) {
+    var added = 0;
+    for (var i = 0; i < files.length; i++) {
+      if (kindOf(files[i]) !== "img") continue;
+      (function (f) {
+        var url = URL.createObjectURL(f);
+        var img = new Image();
+        img.onload = function () { ST.photos.push({ url: url, img: img, name: f.name }); renderThumbs(); updateInfo(); };
+        img.onerror = function () { URL.revokeObjectURL(url); fileError("Bild", f.name); };
+        img.src = url;
+      })(files[i]);
+      added++;
+    }
+    if (added) stopEverything();
+  }
+  function fileError(kind, name) {
+    infoLine.textContent = kind + " \u201C" + name + "\u201D konnte nicht geladen werden \u2013 Format unterst\u00fctzt?";
+    infoLine.className = "infoline err";
+  }
+  function renderThumbs() {
+    thumbs.innerHTML = "";
+    ST.photos.forEach(function (p, idx) {
+      var d = document.createElement("div");
+      d.className = "thumb";
+      var im = document.createElement("img");
+      im.src = p.url;
+      var x = document.createElement("button");
+      x.innerHTML = "&times;";
+      x.title = "Entfernen";
+      x.addEventListener("click", function (e) {
+        e.stopPropagation();
+        stopEverything();
+        URL.revokeObjectURL(p.url);
+        ST.photos.splice(idx, 1);
+        renderThumbs(); updateInfo();
+      });
+      d.appendChild(im); d.appendChild(x);
+      thumbs.appendChild(d);
+    });
+    var n = ST.photos.length;
+    cntPhotos.textContent = n === 0 ? "Noch keine Bilder" : n + (n === 1 ? " Bild" : " Bilder");
+    btnShuffle.disabled = n < 2;
+    btnClearPhotos.disabled = n === 0;
+  }
+  function setAudio(file) {
+    if (kindOf(file) !== "aud") { fileError("Musik", file.name || "Datei"); return; }
+    if (!file.size) {
+      infoLine.textContent = "\u201E" + (file.name || "Datei") + "\u201C ist leer (0 Bytes) \u2013 oft bei Direkt-Ziehen aus Messenger-Apps (WhatsApp/Telegram). Datei erst speichern, dann \u00fcber \u201EKlicken\u201C ausw\u00e4hlen.";
+      infoLine.className = "infoline err";
+      return;
+    }
+    stopEverything();
+    if (ST.audioURL) URL.revokeObjectURL(ST.audioURL);
+    ST.audioURL = URL.createObjectURL(file);
+    ST.audioName = file.name;
+    ST.audioDur = 0;
+    au.src = ST.audioURL;
+    audioInfo.textContent = "L\u00e4dt \u2026";
+    au.onerror = function () { fileError("Musik", file.name || ""); };
+    au.onloadedmetadata = function () {
+      if (isFinite(au.duration) && au.duration > 0) { audioReady(file); return; }
+      // Dauer zun\u00e4chst unbekannt (bei manchen MP3s): Such-Trick
+      var onDur = function () {
+        if (isFinite(au.duration) && au.duration > 0) {
+          au.removeEventListener("durationchange", onDur);
+          au.currentTime = 0;
+          audioReady(file);
+        }
+      };
+      au.addEventListener("durationchange", onDur);
+      try { au.currentTime = 1e7; } catch (err) { }
+      setTimeout(function () {
+        au.removeEventListener("durationchange", onDur);
+        if (!ST.audioDur) { fileError("Musik", file.name || ""); }
+      }, 4000);
+    };
+  }
+  function audioReady(file) {
+    ST.audioDur = au.duration;
+    audioInfo.innerHTML = "<b style=\"color:var(--amb2)\">\u266B " + file.name + "</b> &nbsp;\u00b7&nbsp; " + fmtTime(ST.audioDur) + " lang";
+    updateInfo();
+  }
+  // ---------- Info-Zeile ----------
+  function activeCount() {
+    return ST.photos.length;
+  }
+  function updateInfo() {
+    var n = activeCount();
+    if (!n && !ST.audioDur) { infoLine.textContent = ""; infoLine.className = "infoline"; return; }
+    if (n && ST.audioDur) {
+      var tl = buildTimeline(ST.audioDur, n);
+      var extra = tl.mult > 1 ? " \u00b7 jedes Bild \u2248" + tl.mult + " Takes" : "";
+      var cap = tl.capped ? " \u00b7 nur " + tl.n + " von " + n + " Szenen passen in den Song" : "";
+      infoLine.textContent = "\u2248 " + tl.n + " Szenen \u00d7 " + tl.shotDur.toFixed(1) + " s" + extra + cap +
+        " \u00b7 Intro " + tl.INTRO.toFixed(1) + " s \u00b7 Outro " + tl.OUTRO.toFixed(1) + " s";
+      infoLine.className = "infoline" + (tl.capped ? " err" : "");
+    } else if (n) {
+      infoLine.textContent = n + " Szenen-Quellen bereit \u2013 jetzt noch Musik laden.";
+      infoLine.className = "infoline";
+    } else {
+      infoLine.textContent = "Jetzt Bilder hineinziehen.";
+      infoLine.className = "infoline";
+    }
+  }
+
+  // ---------- Bauen ----------
+  function buildSources() {
+    var src = [];
+    ST.photos.forEach(function (p) { src.push({ img: p.img, rect: { x: 0, y: 0, w: 1, h: 1 } }); });
+    return src;
+  }
+  function build() {
+    var n = activeCount();
+    if (!n) { infoLine.textContent = "Erst Einzelbilder laden \u2013 jedes Bild wird eine Filmszene."; infoLine.className = "infoline err"; return; }
+    if (!ST.audioDur) { infoLine.textContent = "Erst Musik laden \u2013 sie bestimmt die Video-L\u00e4nge."; infoLine.className = "infoline err"; return; }
+    stopEverything();
+    ensureGraph();
+    ST.sources = buildSources();
+    ST.TL = buildTimeline(ST.audioDur, n);
+    preview.classList.add("on");
+    au.currentTime = 0;
+    play();
+    updateInfo();
+    preview.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  function play() {
+    if (!ST.TL) return;
+    ensureGraph();
+    au.play().then(function () {
+      ST.playing = true;
+      btnPlay.innerHTML = "&#10073;&#10073;";
+    }).catch(function () {
+      infoLine.textContent = "Wiedergabe blockiert \u2013 noch einmal klicken.";
+      infoLine.className = "infoline err";
+    });
+  }
+  function pause() {
+    au.pause();
+    ST.playing = false;
+    btnPlay.innerHTML = "&#9654;";
+  }
+
+  // ---------- Effekt-Assets ----------
+  function makeGrain() {
+    var g = document.createElement("canvas");
+    g.width = 320; g.height = 180;
+    var c = g.getContext("2d");
+    var d = c.createImageData(320, 180);
+    for (var i = 0; i < d.data.length; i += 4) {
+      var v = 110 + Math.random() * 90;
+      d.data[i] = v; d.data[i + 1] = v; d.data[i + 2] = v; d.data[i + 3] = 255;
+    }
+    c.putImageData(d, 0, 0);
+    return g;
+  }
+  function makeVig() {
+    var v = document.createElement("canvas");
+    v.width = 1280; v.height = 720;
+    var c = v.getContext("2d");
+    var g = c.createRadialGradient(640, 360, 260, 640, 360, 820);
+    g.addColorStop(0, "rgba(0,0,0,0)");
+    g.addColorStop(1, "rgba(0,0,0,0.52)");
+    c.fillStyle = g;
+    c.fillRect(0, 0, 1280, 720);
+    return v;
+  }
+
+  // ---------- Rendering ----------
+  function drawLayer(ly, t) {
+    var tl = ST.TL;
+    var img, rect, cam, p;
+    var span = DYN[selDyn.value] || 0.10;
+    if (ly.k === "intro") {
+      var s0 = ST.sources[0];
+      img = s0.img; rect = { x: 0, y: 0, w: 1, h: 1 };
+      cam = { z0: 1.0, z1: 1.0 + span * 0.8, dir: 1 };
+      p = clamp(t / tl.INTRO, 0, 1);
+    } else if (ly.k === "outro") {
+      var sl = ST.sources[(tl.n - 1) % ST.sources.length];
+      img = sl.img; rect = { x: 0, y: 0, w: 1, h: 1 };
+      cam = { z0: 1.0 + span * 0.8, z1: 1.0, dir: -1 };
+      p = clamp((t - (tl.D - tl.OUTRO)) / tl.OUTRO, 0, 1);
+    } else {
+      var si = ly.i % ST.sources.length;
+      var s = ST.sources[si];
+      img = s.img; rect = s.rect;
+      cam = shotCam(ly.i, Number(selDyn.value));
+      p = clamp((t - (tl.INTRO + ly.i * tl.shotDur)) / tl.shotDur, 0, 1);
+    }
+    var kb = kenBurns(rect, img.naturalWidth, img.naturalHeight, p, cam, 16 / 9);
+    ctx2.globalAlpha = ly.a;
+    ctx2.drawImage(img, kb.sx, kb.sy, kb.sw, kb.sh, 0, 0, 1280, 720);
+    ctx2.globalAlpha = 1;
+  }
+  var seekActive = false;
+  function drawFrame() {
+    if (!ST.TL || !ST.sources.length) return;
+    var t = au.currentTime;
+    var tl = ST.TL;
+    var W = 1280, H = 720;
+    ctx2.fillStyle = "#000";
+    ctx2.fillRect(0, 0, W, H);
+    var layers = layerStack(tl, t);
+    var useLife = fxLife.checked;
+    var useShim = fxShimmer.checked;
+    var useLook = fxLook.checked;
+    var s = 1, rot = 0, ox = 0, oy = 0;
+    if (useLife) {
+      s *= 1 + 0.0045 * Math.sin(2 * Math.PI * t / 3.7);
+      rot += 0.0021 * Math.sin(2 * Math.PI * t / 5.3);
+      var dT = t - segStart(tl, t);
+      if (dT >= 0) s *= 1 + 0.02 * Math.exp(-dT / 0.16);
+      var target = 0;
+      if (an && ST.playing) {
+        an.getByteFrequencyData(freqData);
+        var sum = 0;
+        for (var b = 1; b <= 12; b++) sum += freqData[b];
+        target = clamp((sum / 12 / 255 - 0.55) / 0.45, 0, 1);
+      }
+      ST.beatSm += (target - ST.beatSm) * 0.35;
+      s *= 1 + 0.0275 * Math.pow(ST.beatSm, 1.4);
+    }
+    if (useShim) {
+      var tick = Math.floor(t * 1000 / 120);
+      if (tick !== ST.lastTick) {
+        ST.lastTick = tick;
+        ST.jx = (Math.random() - 0.5) * 1.4;
+        ST.jy = (Math.random() - 0.5) * 1.4;
+        ST.jr = (Math.random() - 0.5) * 0.0016;
+      }
+      ox = ST.jx; oy = ST.jy; rot += ST.jr;
+    }
+    ctx2.save();
+    ctx2.translate(W / 2 + ox, H / 2 + oy);
+    ctx2.scale(s, s);
+    ctx2.rotate(rot);
+    ctx2.translate(-W / 2, -H / 2);
+    for (var i = 0; i < layers.length; i++) drawLayer(layers[i], t);
+    ctx2.restore();
+    if (useLook) {
+      if (!ST.vig) ST.vig = makeVig();
+      if (!ST.grainA) { ST.grainA = makeGrain(); ST.grainB = makeGrain(); }
+      ctx2.save();
+      ctx2.globalAlpha = 0.06;
+      ctx2.globalCompositeOperation = "overlay";
+      var g = ST.lastTick % 2 === 0 ? ST.grainA : ST.grainB;
+      ctx2.drawImage(g, 0, 0, 1280, 720);
+      ctx2.restore();
+      ctx2.drawImage(ST.vig, 0, 0);
+    }
+    var frac = clamp(t / tl.D, 0, 1);
+    if (!seekActive) seek.value = Math.round(frac * 1000);
+    tLab.textContent = fmtTime(t) + " / " + fmtTime(tl.D);
+    var sl2;
+    if (t < tl.INTRO) sl2 = "Intro";
+    else if (t >= tl.D - tl.OUTRO) sl2 = "Outro";
+    else {
+      var idx = Math.min(tl.n - 1, Math.floor((t - tl.INTRO) / tl.shotDur));
+      sl2 = "Szene " + (idx + 1) + " / " + tl.n;
+    }
+    secLab.textContent = sl2;
+  }
+  function loop() {
+    drawFrame();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  au.addEventListener("ended", function () {
+    ST.playing = false;
+    btnPlay.innerHTML = "&#9654;";
+    if (ST.recording) finishRec();
+  });
+
+  // ---------- Export ----------
+  var rec = null, chunks = [];
+  function startRec() {
+    if (!ST.TL) return;
+    ensureGraph();
+    var stream = stage.captureStream(30);
+    var mime = "";
+    var mimes = ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"];
+    for (var i = 0; i < mimes.length; i++) {
+      if (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(mimes[i])) { mime = mimes[i]; break; }
+    }
+    if (!window.MediaRecorder || !mime) {
+      infoLine.textContent = "Dieser Browser kann keine Video-Aufnahme (MediaRecorder fehlt).";
+      infoLine.className = "infoline err";
+      return;
+    }
+    try {
+      var tracks = msDest.stream.getAudioTracks();
+      for (var k = 0; k < tracks.length; k++) stream.addTrack(tracks[k]);
+      rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000 });
+      chunks = [];
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = function () {
+        if (!chunks.length) return;
+        var blob = new Blob(chunks, { type: "video/webm" });
+        if (dlLink.href) URL.revokeObjectURL(dlLink.href);
+        dlLink.href = URL.createObjectURL(blob);
+        dlLink.classList.add("on");
+      };
+      rec.start(1000);
+      ST.recording = true;
+      recDot.classList.add("on");
+      btnRec.style.display = "none";
+      btnStopRec.style.display = "inline-block";
+      au.currentTime = 0;
+      play();
+    } catch (e) {
+      infoLine.textContent = "Aufnahme konnte nicht gestartet werden: " + e.message;
+      infoLine.className = "infoline err";
+    }
+  }
+  function finishRec() {
+    if (rec && rec.state !== "inactive") { try { rec.stop(); } catch (e) {} }
+    ST.recording = false;
+    recDot.classList.remove("on");
+    btnRec.style.display = "inline-block";
+    btnStopRec.style.display = "none";
+  }
+
+  function wireZone(zone, input, handler, multi) {
+    zone.addEventListener("click", function () { input.click(); });
+    input.addEventListener("change", function () {
+      var fs = input.files;
+      if (!fs || !fs.length) return;
+      if (multi) { handler(fs); } else { handler(fs[0]); }
+      input.value = "";
+    });
+    zone.addEventListener("dragover", function (e) { e.preventDefault(); zone.classList.add("drag"); });
+    zone.addEventListener("dragleave", function () { zone.classList.remove("drag"); });
+    zone.addEventListener("drop", function (e) {
+      e.preventDefault();
+      zone.classList.remove("drag");
+      var fs = e.dataTransfer.files;
+      if (!fs || !fs.length) return;
+      var imgs = [], aud = null;
+      for (var i = 0; i < fs.length; i++) {
+        var kd = kindOf(fs[i]);
+        if (kd === "img") imgs.push(fs[i]);
+        if (kd === "aud") aud = fs[i];
+      }
+      if (aud) { setAudio(aud); }
+      if (imgs.length) {
+        if (multi) { handler(imgs); } else { handler(imgs[0]); }
+      } else if (!aud) {
+        infoLine.textContent = "Bitte Bilddateien oder eine Audiodatei hierher ziehen.";
+        infoLine.className = "infoline err";
+      }
+    });
+  }
+  wireZone(zonePhotos, filePhotos, addPhotos, true);
+  wireZone(zoneAudio, fileAudio, setAudio, false);
+
+  btnShuffle.addEventListener("click", function () {
+    stopEverything();
+    for (var i = ST.photos.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = ST.photos[i]; ST.photos[i] = ST.photos[j]; ST.photos[j] = tmp;
+    }
+    renderThumbs();
+  });
+  btnClearPhotos.addEventListener("click", function () {
+    stopEverything();
+    ST.photos.forEach(function (p) { URL.revokeObjectURL(p.url); });
+    ST.photos = [];
+    renderThumbs(); updateInfo();
+  });
+
+  btnBuild.addEventListener("click", build);
+  btnPlay.addEventListener("click", function () { if (ST.recording) return; if (ST.playing) { pause(); } else { play(); } });
+  btnRestart.addEventListener("click", function () { if (!ST.TL || ST.recording) return; au.currentTime = 0; play(); });
+  seek.addEventListener("input", function () { if (!ST.TL || ST.recording) return; seekActive = true; });
+  seek.addEventListener("change", function () {
+    if (!ST.TL || ST.recording) return;
+    au.currentTime = (Number(seek.value) / 1000) * ST.TL.D;
+    seekActive = false;
+  });
+  btnRec.addEventListener("click", startRec);
+  btnStopRec.addEventListener("click", finishRec);
+})();
+</script>
+</body>
+</html>
