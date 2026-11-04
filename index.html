@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="de">
 <head>
@@ -108,7 +109,7 @@
 </style>
 </head>
 <body>
-<!-- VideoSchmiede v2.1 – Verbesserte MuseGen-Vorlage -->
+<!-- VideoSchmiede v2.3 – MuseGen-Vorlage, verbessert: Foto-Serie + Visual-Stile -->
 <header>
   <div class="wrap nav">
     <div class="logo">
@@ -139,7 +140,7 @@
     <h3>So entsteht dein Musikvideo</h3>
     <p class="lead">Drei Schritte, keine Vorkenntnisse n&ouml;tig &ndash; vom Material zum fertigen Clip in Minuten.</p>
     <div class="grid">
-      <div class="tile"><div class="num">01</div><h4>Material w&auml;hlen</h4><p>Einzelbilder (JPG/PNG/WEBP) reinziehen &ndash; jedes wird eine Filmszene. Collagen? Daf&uuml;r gibt es ein eigenes Zusatz-Tool, das sie automatisch in Einzelbilder zerlegt.</p></div>
+      <div class="tile"><div class="num">01</div><h4>Material w&auml;hlen</h4><p>Einzelbilder (JPG/PNG/WEBP) reinziehen &ndash; jedes wird eine Filmszene. Collagen? Daf&uuml;r gibt es ein eigenes Zusatz-Tool, das sie automatisch in Einzelbilder zerlegt. Oder einfach den Visual-Stil-Modus w&auml;hlen &ndash; dann zeichnet das Video komplett aus der Musik.</p></div>
       <div class="tile"><div class="num">02</div><h4>Musik dazu</h4><p>MP3, WAV, OGG oder M4A reinziehen. Die Songl&auml;nge bestimmt die Timeline, der Beat steuert Puls und Atmung des Videos. Leere Dateien (z.&nbsp;B. direkt aus Messenger-Apps gezogen) werden sauber erkannt und gemeldet.</p></div>
       <div class="tile"><div class="num">03</div><h4>Bauen &amp; exportieren</h4><p>Ein Klick baut die Timeline und startet die Vorschau. Der Export spielt das Video einmal komplett durch und zeichnet es mit Ton als WebM auf &ndash; fertig zum Hochladen.</p></div>
     </div>
@@ -148,6 +149,24 @@
   <div class="studio" id="studio">
     <div class="card">
       <h2>1 &middot; Material</h2>
+      <div class="opts" style="margin:0 0 18px;">
+        <span class="grp">Modus:
+          <select id="selMode">
+            <option value="photos" selected>Foto-Serie (Bilder = Szenen)</option>
+            <option value="style">Visual-Stil (aus der Musik generiert)</option>
+          </select>
+        </span>
+        <span class="grp" id="wrapStyle" style="display:none;">Stil:
+          <select id="selStyle">
+            <option value="neongrid" selected>Neon-Grid</option>
+            <option value="particles">Partikel-Strom</option>
+            <option value="spectrum">Spektrum-Ring</option>
+            <option value="vinyl">Lo-Fi-Fenster</option>
+            <option value="cinematic">Cinematic</option>
+          </select>
+        </span>
+        <span class="hint" id="styleHint"></span>
+      </div>
       <div class="pane on" id="panePhotos">
         <div class="zone" id="zonePhotos">
           <div class="big">&#128247;</div>
@@ -217,6 +236,7 @@
     <p class="lead">Was die Vorlage nur versprochen hat, funktioniert hier wirklich &ndash; komplett lokal und ohne Anmeldung.</p>
     <div class="grid">
       <div class="tile"><div class="num">FOTO</div><h4>Foto-Serie-Modus</h4><p>Mehrere Bilder reinziehen &ndash; jedes wird eine Filmszene, Reihenfolge frei mischbar. Lange Songs bekommen automatisch mehrere Takes pro Bild.</p></div>
+      <div class="tile"><div class="num">STIL</div><h4>Visual-Stil-Modus</h4><p>Kein Bildmaterial da? F&uuml;nf audio-reaktive Stile aus der MuseGen-Vorlage (Neon-Grid, Partikel-Strom, Spektrum-Ring, Lo-Fi-Fenster, Cinematic) zeichnen das Video live aus deinem Song &ndash; im Takt der Musik.</p></div>
       <div class="tile"><div class="num">REIHEN</div><h4>Reihenfolge &amp; Feinschliff</h4><p>Bilder frei mischen oder einzeln per Klick entfernen. Passt der Song nicht zu allen Szenen, k&uuml;rzt die Timeline automatisch auf das, was der Song hergibt.</p></div>
       <div class="tile"><div class="num">BEAT</div><h4>Beat-Puls &amp; Atmung</h4><p>Der Spectrum-Analyzer des Songs treibt Gr&ouml;&szlig;enpuls und Atmung des Bildes &ndash; das Video bewegt sich im Takt deiner Musik.</p></div>
       <div class="tile"><div class="num">CAM</div><h4>Ken-Burns-Kamerafahrten</h4><p>Jede Szene f&auml;hrt eine berechnete Kamerabewegung mit Zoom &ndash; mathematisch geklemmt, damit das Fenster nie aus dem Bild l&auml;uft.</p></div>
@@ -239,6 +259,7 @@
   <section class="block faq" id="faq">
     <h3>Fragen &amp; Antworten</h3>
     <div class="tile"><h4>Ist das die MuseGen-Vorlage?</h4><p>Ja &ndash; im Aufbau und Design an die MuseGen-Website angelehnt, aber die Video-Erstellung l&auml;uft hier wirklich: kein Konto, keine Cloud, alles lokal in deinem Browser.</p></div>
+    <div class="tile"><h4>Was ist der Visual-Stil-Modus?</h4><p>F&uuml;r schnelle Clips ohne eigenes Bildmaterial: f&uuml;nf audio-reaktive Stile (z.&nbsp;B. Neon-Grid, Spektrum-Ring, Lo-Fi-Fenster) generieren die Bilder live aus der Musik &ndash; Puls, Regen, Partikel und Licht folgen Bass, Mitten und H&ouml;hen deines Songs. Umschaltbar im Studio unter &bdquo;Modus&ldquo;.</p></div>
     <div class="tile"><h4>Ich habe eine Collage statt Einzelbildern &ndash; was nun?</h4><p>Die VideoSchmiede verarbeitet nur Einzelbilder (jedes Bild = eine Szene). F&uuml;r Collagen entsteht gerade ein eigenes Zusatz-Tool, das die Panels automatisch in Einzelbilder zerlegt &ndash; bis dahin die Panels selbst zuschneiden und die Bilder einzeln laden.</p></div>
     <div class="tile"><h4>Welches Format hat der Export?</h4><p>WebM (VP8/VP9 + Opus) &ndash; das zeichnet der Browser direkt aus der Vorschau-Leinwand mit Ton auf. Viele Schnittprogramme und Plattformen nehmen WebM an; andernfalls konvertiert es jedes kostenlose Konvertierungstool.</p></div>
     <div class="tile"><h4>Zu viele Bilder f&uuml;r einen kurzen Song?</h4><p>Dann k&uuml;rzt die Timeline die Szenenzahl auf das, was der Song hergibt &ndash; sehr kurze Szenen w&uuml;rden sonst nur flackern. Die Info-Zeile im Studio sagt dir vorher, was passieren wird.</p></div>
@@ -336,6 +357,98 @@
     var m = Math.floor(s / 60), r = Math.floor(s % 60);
     return m + ":" + (r < 10 ? "0" : "") + r;
   }
+  // === Visual-Stile: pur & DOM-frei (getestet) ===
+  function hashSeed(input) {
+    var h = 2166136261;
+    for (var i = 0; i < input.length; i++) { h = (h ^ input.charCodeAt(i)) >>> 0; h = Math.imul(h, 16777619) >>> 0; }
+    return h >>> 0;
+  }
+  function mulberry32(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a |= 0; a = (a + 0x6d2b79f5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var STYLE_DEFS = [
+    { id: "neongrid", label: "Neon-Grid", hue: 344, best: "EDM, Pop, Rock", desc: "Retrowave-Horizont mit laufendem Perspektivgitter, Sonne und Bergen." },
+    { id: "particles", label: "Partikel-Strom", hue: 160, best: "Ambient, Lo-Fi, R&B", desc: "Strömende Partikel mit Trails – Geschwindigkeit und Größe folgen dem Pegel." },
+    { id: "spectrum", label: "Spektrum-Ring", hue: 35, best: "Hip-Hop, EDM, Jazz", desc: "Rotierender Ring aus Bars um einen pulsierenden Kern, dazu Funkenschwarm." },
+    { id: "vinyl", label: "Lo-Fi-Fenster", hue: 258, best: "Lo-Fi, Jazz, Soul", desc: "Nächtliche Stadtsilhouette, Regen, Lampe und eine Platte, die mit dem Bass dreht." },
+    { id: "cinematic", label: "Cinematic", hue: 2, best: "Cinematic, Klassik, Ambient", desc: "Letterbox, anamorphe Lichtflecken, Staub und Timecode-HUD wie im Trailer." }
+  ];
+  function styleDef(id) {
+    for (var i = 0; i < STYLE_DEFS.length; i++) if (STYLE_DEFS[i].id === id) return STYLE_DEFS[i];
+    return STYLE_DEFS[0];
+  }
+  function hslHex(h, s, l) {
+    h = ((h % 360) + 360) % 360;
+    s = clamp(s, 0, 100) / 100; l = clamp(l, 0, 100) / 100;
+    var c = (1 - Math.abs(2 * l - 1)) * s;
+    var x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    var m = l - c / 2;
+    var r = 0, g = 0, b = 0;
+    if (h < 60) { r = c; g = x; }
+    else if (h < 120) { r = x; g = c; }
+    else if (h < 180) { g = c; b = x; }
+    else if (h < 240) { g = x; b = c; }
+    else if (h < 300) { r = x; b = c; }
+    else { r = c; b = x; }
+    function hx(v) { var s2 = Math.round((v + m) * 255).toString(16); return s2.length < 2 ? "0" + s2 : s2; }
+    return "#" + hx(r) + hx(g) + hx(b);
+  }
+  function paletteFor(hue) {
+    return {
+      bg0: "hsla(" + (((hue % 360) + 360) % 360) + ",46%,5%,1)",
+      bg1: "hsla(" + ((((hue + 22) % 360) + 360) % 360) + ",52%,11%,1)",
+      bg2: "hsla(" + ((((hue + 320) % 360) + 360) % 360) + ",48%,18%,1)",
+      accent: hslHex(hue, 92, 62),
+      accent2: hslHex(hue + 48, 90, 66),
+      text: "#F7F2E8",
+      hueBase: ((hue % 360) + 360) % 360
+    };
+  }
+  function createScene(seed, width, height) {
+    var rng = mulberry32(hashSeed(seed));
+    var stars = [], particles = [], drops = [], buildings = [], mountains = [], dust = [], bars = [], i;
+    for (i = 0; i < 130; i++) stars.push({ x: rng() * width, y: rng() * height * 0.62, r: 0.4 + rng() * 1.5, p: rng() * Math.PI * 2 });
+    for (i = 0; i < 190; i++) particles.push({ x: rng() * width, y: rng() * height, vx: 0.4 + rng() * 2.2, vy: (rng() - 0.5) * 0.5, r: 0.8 + rng() * 3.2, hue: rng() * 60 - 30, life: rng() });
+    for (i = 0; i < 150; i++) drops.push({ x: rng() * width, y: rng() * height, len: 8 + rng() * 34, speed: 5 + rng() * 12 });
+    var bx = -40;
+    while (bx < width + 40) {
+      var bw = 40 + rng() * 110;
+      var bh = height * (0.14 + rng() * 0.3);
+      var win = [];
+      for (i = 0; i < 26; i++) win.push(rng() > 0.55 ? 1 : 0);
+      buildings.push({ x: bx, w: bw, h: bh, windows: win });
+      bx += bw + 8 + rng() * 22;
+    }
+    for (i = 0; i < 34; i++) mountains.push(rng());
+    for (i = 0; i < 90; i++) dust.push({ x: rng() * width, y: rng() * height, r: 0.4 + rng() * 1.8, s: 0.15 + rng() * 0.7 });
+    for (i = 0; i < 96; i++) bars.push(0.08);
+    return { stars: stars, particles: particles, drops: drops, buildings: buildings, mountains: mountains, dust: dust, bars: bars, rotation: 0, scroll: 0 };
+  }
+  function computeFeatures(bins, prevRms, smEnergy) {
+    var n = bins.length;
+    var sB = 0, sM = 0, sH = 0, sAll = 0, i;
+    for (i = 1; i <= 12 && i < n; i++) sB += bins[i];
+    for (i = 13; i <= 60 && i < n; i++) sM += bins[i];
+    for (i = 61; i < n; i++) sH += bins[i];
+    for (i = 1; i < n; i++) sAll += bins[i];
+    var f = {
+      rms: sAll / Math.max(1, n - 1) / 255,
+      bass: sB / Math.min(12, Math.max(1, n - 1)) / 255,
+      mid: sM / Math.min(48, Math.max(1, n - 13)) / 255,
+      high: sH / Math.max(1, n - 61) / 255,
+      onset: 0, energy: 0
+    };
+    f.onset = clamp((f.rms - prevRms) * 6, 0, 1);
+    smEnergy = smEnergy + (f.rms - smEnergy) * 0.28;
+    f.energy = smEnergy;
+    return { f: f, prevRms: f.rms, smEnergy: smEnergy };
+  }
   //=== CORE END ===
 
   // ---------- Zustand ----------
@@ -350,7 +463,8 @@
     recording: false,
     beatSm: 0,
     jx: 0, jy: 0, jr: 0, lastTick: -1,
-    grainA: null, grainB: null, vig: null
+    grainA: null, grainB: null, vig: null,
+    mode: "photos", scene: null, sceneStyle: "", pal: null, lastT: -1, prevRms: 0, featEnergy: 0, zeroBins: null
   };
 
   // ---------- DOM ----------
@@ -364,6 +478,7 @@
   var preview = $("preview"), stage = $("stage"), ctx2 = stage.getContext("2d");
   var btnPlay = $("btnPlay"), btnRestart = $("btnRestart"), seek = $("seek"), tLab = $("tLab"), secLab = $("secLab");
   var btnRec = $("btnRec"), btnStopRec = $("btnStopRec"), dlLink = $("dlLink"), recDot = $("recDot");
+  var selMode = $("selMode"), selStyle = $("selStyle"), wrapStyle = $("wrapStyle"), styleHint = $("styleHint");
 
   // ---------- Audio-Graph ----------
   var AC = null, an = null, msDest = null, elSrc = null, freqData = null;
@@ -490,6 +605,7 @@
     return ST.photos.length;
   }
   function updateInfo() {
+    if (ST.mode === "style") { updateStyleInfo(); return; }
     var n = activeCount();
     if (!n && !ST.audioDur) { infoLine.textContent = ""; infoLine.className = "infoline"; return; }
     if (n && ST.audioDur) {
@@ -515,6 +631,7 @@
     return src;
   }
   function build() {
+    if (ST.mode === "style") { buildStyle(); return; }
     var n = activeCount();
     if (!n) { infoLine.textContent = "Erst Einzelbilder laden \u2013 jedes Bild wird eine Filmszene."; infoLine.className = "infoline err"; return; }
     if (!ST.audioDur) { infoLine.textContent = "Erst Musik laden \u2013 sie bestimmt die Video-L\u00e4nge."; infoLine.className = "infoline err"; return; }
@@ -570,6 +687,393 @@
     return v;
   }
 
+  // ---------- Visual-Stil-Modus (audio-reaktive Stile aus der Vorlage) ----------
+  function updateStyleInfo() {
+    var sd = styleDef(selStyle.value);
+    if (!ST.audioDur) {
+      infoLine.textContent = "Stil „" + sd.label + "“ gewählt – jetzt Musik laden. Der Stil läuft über die gesamte Songlänge.";
+      infoLine.className = "infoline";
+      return;
+    }
+    infoLine.textContent = "Stil „" + sd.label + "“ · " + fmtTime(ST.audioDur) + " Musik · passt zu: " + sd.best;
+    infoLine.className = "infoline";
+  }
+  function buildStyle() {
+    if (!ST.audioDur) {
+      infoLine.textContent = "Erst Musik laden – sie steuert den Visual-Stil.";
+      infoLine.className = "infoline err";
+      return;
+    }
+    stopEverything();
+    ensureGraph();
+    var sd = styleDef(selStyle.value);
+    ST.pal = paletteFor(sd.hue);
+    if (!ST.scene || ST.sceneStyle !== selStyle.value) {
+      ST.scene = createScene(ST.audioName + "|" + selStyle.value, 1280, 720);
+      ST.sceneStyle = selStyle.value;
+    }
+    if (!ST.zeroBins) ST.zeroBins = new Uint8Array(128);
+    ST.TL = { D: ST.audioDur, INTRO: 0, OUTRO: 0, XF: 0, shotDur: ST.audioDur, n: 1, mult: 1, capped: false };
+    ST.sources = [];
+    ST.lastT = -1;
+    preview.classList.add("on");
+    au.currentTime = 0;
+    play();
+    updateInfo();
+    preview.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  function liveFeatures() {
+    var r;
+    if (an && ST.playing && freqData) {
+      an.getByteFrequencyData(freqData);
+      r = computeFeatures(freqData, ST.prevRms, ST.featEnergy);
+    } else {
+      if (!ST.zeroBins) ST.zeroBins = new Uint8Array(128);
+      r = computeFeatures(ST.zeroBins, ST.prevRms, ST.featEnergy);
+    }
+    ST.prevRms = r.prevRms;
+    ST.featEnergy = r.smEnergy;
+    return r.f;
+  }
+  function trackName() {
+    var nm = ST.audioName || "";
+    var d = nm.lastIndexOf(".");
+    if (d > 0) nm = nm.slice(0, d);
+    if (nm.length > 40) nm = nm.slice(0, 39) + "…";
+    return nm;
+  }
+  function stHsl(h, s, l, a) {
+    return "hsla(" + (((Math.round(h) % 360) + 360) % 360) + "," + Math.round(s) + "%," + Math.round(l) + "%," + a + ")";
+  }
+  function stBase(a, strength) {
+    var ctx = a.ctx, W = a.width, H = a.height, pal = a.pal, f = a.f;
+    var g = ctx.createLinearGradient(0, 0, W * 0.35, H);
+    g.addColorStop(0, pal.bg0); g.addColorStop(0.55, pal.bg1); g.addColorStop(1, pal.bg2);
+    ctx.globalAlpha = strength;
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+    var glow = ctx.createRadialGradient(W * 0.5, H * (0.52 - f.bass * 0.06), 0, W * 0.5, H * 0.52, W * (0.42 + f.energy * 0.18));
+    glow.addColorStop(0, pal.accent + "33"); glow.addColorStop(1, "transparent");
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+  }
+  function stVig(a, amount) {
+    var ctx = a.ctx, W = a.width, H = a.height;
+    var g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.28, W / 2, H / 2, Math.max(W, H) * 0.78);
+    g.addColorStop(0, "transparent"); g.addColorStop(1, "rgba(0,0,0," + amount + ")");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  }
+  function stGrain(a, amount) {
+    var ctx = a.ctx, W = a.width, H = a.height;
+    var rng = mulberry32(hashSeed(Math.floor(a.time * 12) + "-g"));
+    ctx.save();
+    ctx.globalAlpha = amount;
+    for (var i = 0; i < 240; i++) {
+      var x = rng() * W, y = rng() * H, s = rng() * 2.2;
+      ctx.fillStyle = rng() > 0.5 ? "#ffffff" : "#000000";
+      ctx.fillRect(x, y, s, s);
+    }
+    ctx.restore();
+  }
+  function drawNeonGrid(a) {
+    var ctx = a.ctx, W = a.width, H = a.height, t = a.time, f = a.f, pal = a.pal, sc = a.scene;
+    stBase(a, 1);
+    var horizon = H * 0.56;
+    for (var i = 0; i < sc.stars.length; i++) {
+      var st = sc.stars[i];
+      var tw = 0.35 + Math.abs(Math.sin(t * 1.6 + st.p)) * 0.65;
+      ctx.globalAlpha = tw * (0.35 + f.high * 0.65);
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    var sunR = H * (0.16 + f.energy * 0.045), sunX = W * 0.5, sunY = horizon - sunR * 0.42;
+    var sg = ctx.createLinearGradient(sunX, sunY - sunR, sunX, sunY + sunR);
+    sg.addColorStop(0, pal.accent2); sg.addColorStop(1, pal.accent);
+    ctx.save();
+    ctx.beginPath(); ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2); ctx.clip();
+    ctx.fillStyle = sg;
+    ctx.fillRect(sunX - sunR, sunY - sunR, sunR * 2, sunR * 2);
+    ctx.fillStyle = pal.bg0;
+    for (var k = 0; k < 8; k++) {
+      var y = sunY + sunR * 0.05 + k * (sunR * 0.16) + ((t * 26) % (sunR * 0.16));
+      ctx.globalAlpha = 0.85;
+      ctx.fillRect(sunX - sunR, y, sunR * 2, sunR * 0.055 + k * 0.7);
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    ctx.beginPath(); ctx.moveTo(0, horizon);
+    for (var m = 0; m < sc.mountains.length; m++) {
+      var mx = (m / (sc.mountains.length - 1)) * W;
+      var my = horizon - sc.mountains[m] * H * 0.16 - f.bass * 12;
+      ctx.lineTo(mx, my);
+    }
+    ctx.lineTo(W, horizon); ctx.closePath();
+    ctx.fillStyle = "rgba(4,4,9,0.92)"; ctx.fill();
+    ctx.strokeStyle = pal.accent + "66"; ctx.lineWidth = 1.4; ctx.stroke();
+    sc.scroll = (sc.scroll + a.delta * (60 + f.bass * 320)) % 1;
+    ctx.strokeStyle = pal.accent; ctx.lineWidth = 1.2;
+    for (var l = 0; l < 22; l++) {
+      var tt = (l + sc.scroll) / 22;
+      var yy = horizon + Math.pow(tt, 2.35) * (H - horizon) * 1.15;
+      if (yy > H) continue;
+      ctx.globalAlpha = 0.18 + tt * 0.5;
+      ctx.beginPath(); ctx.moveTo(0, yy); ctx.lineTo(W, yy); ctx.stroke();
+    }
+    for (var v = -14; v <= 14; v++) {
+      ctx.globalAlpha = 0.3;
+      ctx.beginPath(); ctx.moveTo(W / 2 + v * (W / 26), horizon);
+      ctx.lineTo(W / 2 + v * (W / 3.1), H); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    var fl = ctx.createLinearGradient(0, horizon, 0, H);
+    fl.addColorStop(0, pal.accent + "22"); fl.addColorStop(1, "transparent");
+    ctx.fillStyle = fl; ctx.fillRect(0, horizon, W, H - horizon);
+    stVig(a, 0.5); stGrain(a, 0.035);
+  }
+  function drawParticles(a) {
+    var ctx = a.ctx, W = a.width, H = a.height, f = a.f, pal = a.pal, sc = a.scene, t = a.time;
+    ctx.fillStyle = "rgba(6,6,12,0.22)"; ctx.fillRect(0, 0, W, H);
+    stBase(a, 0.22);
+    var speed = 0.6 + f.rms * 5.4;
+    for (var i = 0; i < sc.particles.length; i++) {
+      var p = sc.particles[i];
+      p.x += p.vx * speed * (0.6 + f.mid);
+      p.y += p.vy * speed + Math.sin(t * 0.8 + p.life * 12) * 0.35;
+      if (p.x > W + 20) { p.x = -20; p.y = Math.random() * H; }
+      if (p.y > H + 20) p.y = -20;
+      if (p.y < -20) p.y = H + 20;
+      var radius = p.r * (0.6 + f.bass * 2.4);
+      var hue = pal.hueBase + p.hue;
+      var gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, Math.max(1, radius * 4));
+      gr.addColorStop(0, stHsl(hue, 92, 66, 0.85)); gr.addColorStop(1, "transparent");
+      ctx.fillStyle = gr;
+      ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(1, radius * 4), 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = stHsl(hue, 95, 78, 0.9);
+      ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0.6, radius * 0.5), 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = pal.accent + "22"; ctx.lineWidth = 0.8;
+    for (var j = 0; j < sc.particles.length; j += 6) {
+      var p2 = sc.particles[j], q = sc.particles[(j + 6) % sc.particles.length];
+      var dist = Math.hypot(p2.x - q.x, p2.y - q.y);
+      if (dist < 130) {
+        ctx.globalAlpha = (1 - dist / 130) * (0.25 + f.energy * 0.5);
+        ctx.beginPath(); ctx.moveTo(p2.x, p2.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
+    stVig(a, 0.42);
+  }
+  function drawSpectrum(a) {
+    var ctx = a.ctx, W = a.width, H = a.height, t = a.time, f = a.f, pal = a.pal, sc = a.scene;
+    stBase(a, 0.92);
+    var cx = W / 2, cy = H / 2, baseR = Math.min(W, H) * 0.17, bars = sc.bars.length;
+    sc.rotation += a.delta * (0.12 + f.mid * 0.5);
+    for (var r = 0; r < 5; r++) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, baseR * (1.7 + r * 0.55) + f.bass * 14, 0, Math.PI * 2);
+      ctx.strokeStyle = pal.accent + (r % 2 ? "18" : "10");
+      ctx.lineWidth = 1.2; ctx.stroke();
+    }
+    for (var i = 0; i < bars; i++) {
+      var target = 0.08 + Math.abs(Math.sin(i * 0.42 + t * 1.4)) * f.mid * 0.7 + (i % 4 === 0 ? f.bass * 0.9 : f.high * 0.55);
+      sc.bars[i] = sc.bars[i] * 0.72 + target * 0.28;
+      var value = Math.min(1.4, sc.bars[i]);
+      var ang = (i / bars) * Math.PI * 2 + sc.rotation;
+      var len = baseR * (0.35 + value * 1.9);
+      var x1 = cx + Math.cos(ang) * baseR, y1 = cy + Math.sin(ang) * baseR;
+      var x2 = cx + Math.cos(ang) * (baseR + len), y2 = cy + Math.sin(ang) * (baseR + len);
+      var g = ctx.createLinearGradient(x1, y1, x2, y2);
+      g.addColorStop(0, pal.accent2); g.addColorStop(1, pal.accent + "22");
+      ctx.strokeStyle = g;
+      ctx.lineWidth = Math.max(1.6, (Math.PI * 2 * baseR) / bars / 2.6);
+      ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.globalAlpha = 0.32;
+      ctx.beginPath(); ctx.moveTo(x1, y1);
+      ctx.lineTo(cx + Math.cos(ang) * (baseR - len * 0.32), cy + Math.sin(ang) * (baseR - len * 0.32));
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    var coreR = baseR * (0.62 + f.bass * 0.3);
+    var core = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR * 2.2);
+    core.addColorStop(0, "rgba(255,255,255,0.9)"); core.addColorStop(0.25, pal.accent2); core.addColorStop(1, "transparent");
+    ctx.fillStyle = core;
+    ctx.beginPath(); ctx.arc(cx, cy, coreR * 2.2, 0, Math.PI * 2); ctx.fill();
+    if (f.onset > 0.25) {
+      for (var s = 0; s < 10; s++) {
+        var fa = Math.random() * Math.PI * 2, fd = baseR * (1.2 + Math.random() * 1.6);
+        ctx.fillStyle = "rgba(255,255,255," + (0.15 + f.onset * 0.5) + ")";
+        ctx.beginPath(); ctx.arc(cx + Math.cos(fa) * fd, cy + Math.sin(fa) * fd, 1.4 + Math.random() * 2, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    ctx.save();
+    ctx.translate(cx, cy); ctx.rotate(sc.rotation * 0.4);
+    ctx.fillStyle = "rgba(247,242,232,0.5)";
+    ctx.font = "600 " + Math.round(baseR * 0.16) + "px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(trackName() || "VIDEOSCHMIEDE", 0, baseR * 1.42);
+    ctx.restore();
+    stVig(a, 0.45); stGrain(a, 0.03);
+  }
+  function drawVinyl(a) {
+    var ctx = a.ctx, W = a.width, H = a.height, t = a.time, f = a.f, pal = a.pal, sc = a.scene;
+    var hue = pal.hueBase;
+    var night = ctx.createLinearGradient(0, 0, 0, H);
+    night.addColorStop(0, stHsl(hue + 210, 34, 8, 1));
+    night.addColorStop(0.6, stHsl(hue + 250, 30, 12, 1));
+    night.addColorStop(1, stHsl(hue + 20, 26, 7, 1));
+    ctx.fillStyle = night; ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = "rgba(255,246,225,0.9)";
+    ctx.beginPath(); ctx.arc(W * 0.78, H * 0.2, H * 0.055, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+    for (var i = 0; i < sc.stars.length; i++) {
+      var st = sc.stars[i];
+      ctx.globalAlpha = 0.2 + Math.abs(Math.sin(t + st.p)) * 0.4;
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(st.x, st.y * 0.7, st.r, st.r);
+    }
+    ctx.globalAlpha = 1;
+    var skyline = H * 0.62;
+    for (var b = 0; b < sc.buildings.length; b++) {
+      var bd = sc.buildings[b];
+      ctx.fillStyle = "rgba(5,5,10,0.94)";
+      ctx.fillRect(bd.x, skyline - bd.h, bd.w, bd.h + H);
+      var cols = Math.max(1, Math.floor(bd.w / 16));
+      for (var wi = 0; wi < bd.windows.length; wi++) {
+        if (!bd.windows[wi]) continue;
+        var wx = bd.x + 6 + (wi % cols) * 14;
+        var wy = skyline - bd.h + 10 + Math.floor(wi / cols) * 18;
+        if (wy > skyline - 6) continue;
+        var flick = 0.35 + Math.abs(Math.sin(t * 0.6 + wi)) * 0.65;
+        ctx.fillStyle = "rgba(255,196,110," + (0.25 + flick * 0.5 * (0.4 + f.energy)) + ")";
+        ctx.fillRect(wx, wy, 6, 8);
+      }
+    }
+    var glow = ctx.createRadialGradient(W * 0.18, H * 0.72, 0, W * 0.18, H * 0.72, W * 0.4);
+    glow.addColorStop(0, "rgba(255,180,67," + (0.22 + f.rms * 0.2) + ")");
+    glow.addColorStop(1, "transparent");
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = "rgba(210,225,255,0.28)"; ctx.lineWidth = 1.1;
+    for (var d = 0; d < sc.drops.length; d++) {
+      var dr = sc.drops[d];
+      dr.y += dr.speed * (1 + f.energy * 1.6);
+      dr.x -= dr.speed * 0.18;
+      if (dr.y > H) { dr.y = -20; dr.x = Math.random() * (W + 60); }
+      ctx.globalAlpha = 0.18 + f.high * 0.3;
+      ctx.beginPath(); ctx.moveTo(dr.x, dr.y); ctx.lineTo(dr.x - dr.len * 0.18, dr.y + dr.len); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    var rx = W * 0.5, ry = H * 0.82, rr = Math.min(W, H) * (0.17 + f.bass * 0.02);
+    sc.rotation += a.delta * (0.5 + f.bass * 3);
+    ctx.save();
+    ctx.translate(rx, ry); ctx.rotate(sc.rotation);
+    ctx.fillStyle = "#0c0c12";
+    ctx.beginPath(); ctx.arc(0, 0, rr, 0, Math.PI * 2); ctx.fill();
+    for (var ri = 0; ri < 26; ri++) {
+      ctx.strokeStyle = "rgba(255,255,255," + (0.03 + (ri % 5 === 0 ? 0.05 : 0)) + ")";
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(0, 0, rr * (0.32 + ri * 0.026), 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.fillStyle = pal.accent;
+    ctx.beginPath(); ctx.arc(0, 0, rr * 0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(10,10,14,0.9)";
+    ctx.beginPath(); ctx.arc(0, 0, rr * 0.05, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle = "rgba(230,230,240,0.75)"; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(rx + rr * 1.25, ry - rr * 0.95);
+    ctx.lineTo(rx + rr * 0.35 + f.energy * 6, ry - rr * 0.1);
+    ctx.stroke();
+    stVig(a, 0.55); stGrain(a, 0.07);
+  }
+  function drawCinematic(a) {
+    var ctx = a.ctx, W = a.width, H = a.height, t = a.time, f = a.f, pal = a.pal, sc = a.scene;
+    ctx.fillStyle = "#05050a"; ctx.fillRect(0, 0, W, H);
+    var zoom = 1 + Math.sin(t * 0.12) * 0.06 + f.energy * 0.08;
+    var driftX = Math.sin(t * 0.09) * W * 0.06;
+    var driftY = Math.cos(t * 0.07) * H * 0.05;
+    var blobs = [
+      { x: W * 0.3 + driftX, y: H * 0.42 + driftY, r: W * 0.42 * zoom, c: pal.accent, al: "3a" },
+      { x: W * 0.72 - driftX, y: H * 0.3 - driftY, r: W * 0.34 * zoom, c: pal.accent2, al: "3a" },
+      { x: W * 0.5, y: H * 0.85, r: W * 0.5 * zoom, c: hslHex(pal.hueBase + 320, 48, 18), al: "55" }
+    ];
+    for (var bi = 0; bi < blobs.length; bi++) {
+      var bl = blobs[bi];
+      var g = ctx.createRadialGradient(bl.x, bl.y, 0, bl.x, bl.y, bl.r);
+      g.addColorStop(0, bl.c + bl.al); g.addColorStop(1, "transparent");
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    }
+    var flareY = H * (0.42 + Math.sin(t * 0.4) * 0.05);
+    var flare = ctx.createLinearGradient(0, flareY, W, flareY);
+    flare.addColorStop(0, "transparent");
+    flare.addColorStop(0.5, "rgba(190,225,255," + (0.1 + f.onset * 0.5 + f.energy * 0.18) + ")");
+    flare.addColorStop(1, "transparent");
+    ctx.fillStyle = flare;
+    ctx.fillRect(0, flareY - 2 - f.bass * 8, W, 4 + f.bass * 16);
+    for (var di = 0; di < sc.dust.length; di++) {
+      var du = sc.dust[di];
+      du.x += du.s * (0.4 + f.mid);
+      du.y += Math.sin(t + du.x * 0.01) * 0.2;
+      if (du.x > W) du.x = -5;
+      ctx.globalAlpha = 0.12 + f.high * 0.3;
+      ctx.fillStyle = "#fff";
+      ctx.beginPath(); ctx.arc(du.x, du.y, du.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = pal.accent + "44"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, H * 0.72); ctx.lineTo(W, H * 0.72); ctx.stroke();
+    var bar = H * 0.085;
+    ctx.fillStyle = "#04040a";
+    ctx.fillRect(0, 0, W, bar); ctx.fillRect(0, H - bar, W, bar);
+    ctx.fillStyle = "rgba(247,242,232,0.55)";
+    ctx.font = "500 " + Math.round(H * 0.022) + "px sans-serif";
+    ctx.textAlign = "left";
+    var mm = Math.floor(t / 60), ss = Math.floor(t % 60), ff = Math.floor((t % 1) * 24);
+    var p2 = function (v) { return (v < 10 ? "0" : "") + v; };
+    ctx.fillText("REC ● " + p2(mm) + ":" + p2(ss) + ":" + p2(ff), W * 0.05, H * 0.055);
+    ctx.textAlign = "right";
+    ctx.fillText(trackName().toUpperCase() || "VIDEOSCHMIEDE", W * 0.95, H * 0.055);
+    ctx.textAlign = "left";
+    stVig(a, 0.62); stGrain(a, 0.06);
+  }
+  function drawTitleCard(a) {
+    var ctx = a.ctx, W = a.width, H = a.height;
+    var local = clamp((a.time - 0.3) / 3.4, 0, 1);
+    var alpha = Math.min(1, local * 5) * Math.min(1, (1 - local) * 4);
+    if (alpha <= 0.01) return;
+    var nm = trackName();
+    var size = Math.min(64, Math.round(W * 0.05));
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.textAlign = "center";
+    ctx.font = "800 " + size + "px 'Trebuchet MS', sans-serif";
+    ctx.fillStyle = a.pal.text;
+    ctx.shadowColor = "rgba(0,0,0,0.65)"; ctx.shadowBlur = 24;
+    ctx.fillText(nm || "VideoSchmiede", W / 2, H * 0.5);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = a.pal.accent;
+    ctx.fillRect(W / 2 - size * 0.9, H * 0.5 + size * 0.55, size * 1.8, 3);
+    ctx.font = "600 15px sans-serif";
+    ctx.fillStyle = "rgba(247,242,232,0.75)";
+    ctx.fillText("VIDEOSCHMIEDE · VISUAL-STIL", W / 2, H * 0.5 + size * 0.95);
+    ctx.restore();
+  }
+  var STYLE_DRAWERS = { neongrid: drawNeonGrid, particles: drawParticles, spectrum: drawSpectrum, vinyl: drawVinyl, cinematic: drawCinematic };
+  function drawStyleFrame() {
+    var t = au.currentTime, tl = ST.TL;
+    if (!tl || !ST.scene || !ST.pal) return;
+    var delta = ST.lastT < 0 ? 0.016 : clamp(t - ST.lastT, 0, 0.1);
+    ST.lastT = t;
+    var f = liveFeatures();
+    var a = { ctx: ctx2, width: 1280, height: 720, time: t, delta: delta, f: f, pal: ST.pal, scene: ST.scene };
+    (STYLE_DRAWERS[selStyle.value] || drawSpectrum)(a);
+    if (t < 4.2) drawTitleCard(a);
+    var frac = clamp(t / tl.D, 0, 1);
+    if (!seekActive) seek.value = Math.round(frac * 1000);
+    tLab.textContent = fmtTime(t) + " / " + fmtTime(tl.D);
+    secLab.textContent = styleDef(selStyle.value).label;
+  }
   // ---------- Rendering ----------
   function drawLayer(ly, t) {
     var tl = ST.TL;
@@ -599,7 +1103,9 @@
   }
   var seekActive = false;
   function drawFrame() {
-    if (!ST.TL || !ST.sources.length) return;
+    if (!ST.TL) return;
+    if (ST.mode === "style") { drawStyleFrame(); return; }
+    if (!ST.sources.length) return;
     var t = au.currentTime;
     var tl = ST.TL;
     var W = 1280, H = 720;
@@ -759,33 +1265,22 @@
   wireZone(zonePhotos, filePhotos, addPhotos, true);
   wireZone(zoneAudio, fileAudio, setAudio, false);
 
-  btnShuffle.addEventListener("click", function () {
+  function applyMode() {
+    ST.mode = selMode.value;
+    var isStyle = ST.mode === "style";
+    panePhotos.style.display = isStyle ? "none" : "";
+    wrapStyle.style.display = isStyle ? "" : "none";
+    var sd = styleDef(selStyle.value);
+    styleHint.textContent = isStyle ? sd.desc + " Passt zu: " + sd.best : "";
+    updateInfo();
+  }
+  selMode.addEventListener("change", function () { stopEverything(); applyMode(); });
+  selStyle.addEventListener("change", function () {
     stopEverything();
-    for (var i = ST.photos.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = ST.photos[i]; ST.photos[i] = ST.photos[j]; ST.photos[j] = tmp;
-    }
-    renderThumbs();
+    ST.scene = null; ST.sceneStyle = "";
+    var sd = styleDef(selStyle.value);
+    styleHint.textContent = selMode.value === "style" ? sd.desc + " Passt zu: " + sd.best : "";
+    updateInfo();
   });
-  btnClearPhotos.addEventListener("click", function () {
-    stopEverything();
-    ST.photos.forEach(function (p) { URL.revokeObjectURL(p.url); });
-    ST.photos = [];
-    renderThumbs(); updateInfo();
-  });
+  applyMode();
 
-  btnBuild.addEventListener("click", build);
-  btnPlay.addEventListener("click", function () { if (ST.recording) return; if (ST.playing) { pause(); } else { play(); } });
-  btnRestart.addEventListener("click", function () { if (!ST.TL || ST.recording) return; au.currentTime = 0; play(); });
-  seek.addEventListener("input", function () { if (!ST.TL || ST.recording) return; seekActive = true; });
-  seek.addEventListener("change", function () {
-    if (!ST.TL || ST.recording) return;
-    au.currentTime = (Number(seek.value) / 1000) * ST.TL.D;
-    seekActive = false;
-  });
-  btnRec.addEventListener("click", startRec);
-  btnStopRec.addEventListener("click", finishRec);
-})();
-</script>
-</body>
-</html>

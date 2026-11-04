@@ -1,21 +1,19 @@
-# VideoSchmiede
+# Videoschmiede
 
-Musikvideo-Studio: Einzelbilder + Song rein – fertig ist ein animiertes Musikvideo mit Kamerafahrten, weichen Blenden und Beat-Puls. Läuft komplett lokal im Browser: kein Server, kein Upload, kein Konto.
+Musikvideo-Studio – komplett lokal im Browser. Verbesserte MuseGen-Vorlage.
 
-## Features
-- **Einzelbild-Workflow**: jedes Bild eine Filmszene, Reihenfolge frei mischbar, einzelne Szenen per Klick entfernen
-- **Ken-Burns-Kamerafahrten**, mathematisch auf die Bildgrenzen geklemmt
-- **Beat-Puls & Atmung** über den Spectrum-Analyzer des Songs
-- **Robuster Musik-Import**: 0-Byte-Guard für direkt aus Messenger-Apps gezogene Dateien, Workaround für MP3s ohne Dauerangabe
-- **Lange Songs**: automatische Takes pro Bild; **kurze Songs**: automatische Kappung auf das, was der Song hergibt
-- **Export als WebM mit Ton** (MediaRecorder, direkt aus der Vorschau)
+## Was drin ist
 
-## Nutzung
-1. `index.html` im Browser öffnen (Doppelklick genügt – kein Build, keine Abhängigkeiten)
-2. Einzelbilder reinziehen, Musik laden
-3. „Video zusammenbauen“ → Vorschau prüfen → „Video exportieren (WebM)“
+- **index.html – VideoSchmiede:** Song + Material reinziehen → animiertes Musikvideo mit Intro/Outro und WebM-Export mit Ton.
+  - **Foto-Serie-Modus:** Einzelbilder reinziehen, jedes Bild wird eine Filmszene (Ken-Burns-Kamerafahrten, weiche Blenden, Beat-Puls). Lange Songs bekommen automatisch mehrere Takes pro Bild.
+  - **Visual-Stil-Modus (Neu):** Ganz ohne Bildmaterial zeichnen fünf audio-reaktive Stile – Neon-Grid, Partikel-Strom, Spektrum-Ring, Lo-Fi-Fenster, Cinematic – das Video live aus der Musik. Bass, Mitten und Höhen des Songs steuern Puls, Partikel, Regen, Licht und Platten-Drehung.
+- **spalter.html – Collage-Spalter:** Collage (z. B. 4×6-Raster mit weißen Stegen) per Raster-Preset in Einzelbilder zerlegen – fertig für die VideoSchmiede.
 
-## Zusatz-Tool: Collage-Spalter (`spalter.html`)
-Collagen (mehrere Panels in einem Bild) zerlegt der Collage-Spalter in einzelne JPGs – Raster bis 12×12, Rand-Anteil in Prozent abschneiden (z. B. 5 % für weiße Stege), Panels einzeln an/abwählen, Speicherung in Original-Pixelgröße und Lesereihenfolge (`name_panel-01.jpg` …). Anschließend die Einzelbilder einfach in die VideoSchmiede ziehen.
+## Workflow
 
-**Workflow:** Collage → `spalter.html` (Raster festlegen, JPGs speichern) → `index.html` (Bilder + Musik, Video bauen)
+1. Collage? Erst mit `spalter.html` in Einzelbilder zerlegen.
+2. `index.html` öffnen, Modus wählen: Foto-Serie oder Visual-Stil.
+3. Musik (MP3/WAV/OGG/M4A) reinziehen, im Foto-Modus zusätzlich Einzelbilder, „Video zusammenbauen“ klicken.
+4. „Video exportieren (WebM)“ – der Browser spielt das Video einmal durch und zeichnet es mit Ton auf.
+
+Kein Server, kein Upload, kein Konto, kein Tracking – alles läuft lokal im Browser.
