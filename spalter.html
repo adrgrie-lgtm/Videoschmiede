@@ -39,7 +39,7 @@
   .card { background: linear-gradient(180deg, var(--card), var(--bg2)); border: 1px solid var(--line);
     border-radius: 20px; padding: 26px; box-shadow: 0 24px 60px rgba(0,0,0,0.45); }
   .card h2 { font-size: 15px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amb2); margin-bottom: 14px; }
-  .zone { border: 2px dashed rgba(139,92,246,0.35); border-radius: 14px; background: rgba(139,92,246,0.04);
+  .zone { display: block; border: 2px dashed rgba(139,92,246,0.35); border-radius: 14px; background: rgba(139,92,246,0.04);
     padding: 26px 18px; text-align: center; cursor: pointer; transition: all 0.15s ease; }
   .zone:hover, .zone.drag { border-color: var(--amb); background: rgba(139,92,246,0.10); }
   .zone .big { font-size: 30px; }
@@ -89,12 +89,12 @@
   <div class="studio" id="studio">
     <div class="card">
       <h2>1 &middot; Collage laden</h2>
-      <div class="zone" id="zone">
+      <label class="zone" id="zone" for="file">
         <div class="big">&#129504;</div>
-        <b>Collage hierher ziehen oder klicken</b>
+        <b>Collage hierher ziehen oder antippen</b>
         <p>JPG/PNG/WEBP &ndash; ein einzelnes Bild mit mehreren Panels (Comic-Collage, Foto-Grid &hellip;)</p>
-      </div>
-      <input type="file" id="file" accept="image/*" hidden />
+      </label>
+      <input type="file" id="file" accept="image/*" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:0;overflow:hidden;" />
 
       <div class="markwrap" id="markWrap">
         <h2 style="margin-top:20px;">2 &middot; Raster festlegen</h2>
@@ -487,7 +487,7 @@
   btnClearR.addEventListener("click", function () { ST.rects = []; draw(); updateCount(); });
 
   // Verkabelung
-  zone.addEventListener("click", function () { fileIn.click(); });
+  // Upload: Zone ist ein <label for="file"> – Tap/Klick öffnet den Dialog nativ (auch mobil)
   fileIn.addEventListener("change", function () {
     if (fileIn.files && fileIn.files.length) { setImg(fileIn.files[0]); fileIn.value = ""; }
   });
