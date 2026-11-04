@@ -51,7 +51,7 @@
   .tab.on { background: rgba(139,92,246,0.14); border-color: rgba(139,92,246,0.55); color: var(--amb2); }
   .pane { display: none; }
   .pane.on { display: block; }
-  .zone { border: 2px dashed rgba(139,92,246,0.35); border-radius: 14px; background: rgba(139,92,246,0.04);
+  .zone { display: block; border: 2px dashed rgba(139,92,246,0.35); border-radius: 14px; background: rgba(139,92,246,0.04);
     padding: 26px 18px; text-align: center; cursor: pointer; transition: all 0.15s ease; }
   .zone:hover, .zone.drag { border-color: var(--amb); background: rgba(139,92,246,0.10); }
   .zone .big { font-size: 30px; }
@@ -168,12 +168,12 @@
         <span class="hint" id="styleHint"></span>
       </div>
       <div class="pane on" id="panePhotos">
-        <div class="zone" id="zonePhotos">
+        <label class="zone" id="zonePhotos" for="filePhotos">
           <div class="big">&#128247;</div>
-          <b>Bilder hierher ziehen oder klicken</b>
+          <b>Bilder hierher ziehen oder antippen</b>
           <p>Mehrere Fotos (JPG/PNG/WEBP) &ndash; jedes wird eine Filmszene. Reihenfolge = Reihenfolge im Video.</p>
-        </div>
-        <input type="file" id="filePhotos" accept="image/*" multiple hidden />
+        </label>
+        <input type="file" id="filePhotos" accept="image/*" multiple style="position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:0;overflow:hidden;" />
         <div class="row" style="margin-top:12px;">
           <button class="btn ghost small" id="btnShuffle" disabled>&#128256; Reihenfolge mischen</button>
           <button class="btn ghost small" id="btnClearPhotos" disabled>Leeren</button>
@@ -182,12 +182,12 @@
         <div class="thumbs" id="thumbs"></div>
       </div>
 
-      <div class="zone" id="zoneAudio" style="margin-top:18px;">
+      <label class="zone" id="zoneAudio" for="fileAudio" style="margin-top:18px;">
         <div class="big">&#127925;</div>
-        <b>Musik hierher ziehen oder klicken</b>
+        <b>Musik hierher ziehen oder antippen</b>
         <p>MP3/WAV/OGG/M4A &ndash; die L&auml;nge des Songs bestimmt die Timeline des Videos.</p>
-      </div>
-      <input type="file" id="fileAudio" accept="audio/*" hidden />
+      </label>
+      <input type="file" id="fileAudio" accept="audio/*" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:0;overflow:hidden;" />
       <p class="hint" id="audioInfo" style="margin-top:10px;">Noch keine Musik geladen.</p>
 
       <div class="opts">
@@ -260,7 +260,7 @@
     <h3>Fragen &amp; Antworten</h3>
     <div class="tile"><h4>Ist das die MuseGen-Vorlage?</h4><p>Ja &ndash; im Aufbau und Design an die MuseGen-Website angelehnt, aber die Video-Erstellung l&auml;uft hier wirklich: kein Konto, keine Cloud, alles lokal in deinem Browser.</p></div>
     <div class="tile"><h4>Was ist der Visual-Stil-Modus?</h4><p>F&uuml;r schnelle Clips ohne eigenes Bildmaterial: f&uuml;nf audio-reaktive Stile (z.&nbsp;B. Neon-Grid, Spektrum-Ring, Lo-Fi-Fenster) generieren die Bilder live aus der Musik &ndash; Puls, Regen, Partikel und Licht folgen Bass, Mitten und H&ouml;hen deines Songs. Umschaltbar im Studio unter &bdquo;Modus&ldquo;.</p></div>
-    <div class="tile"><h4>Ich habe eine Collage statt Einzelbildern &ndash; was nun?</h4><p>Die VideoSchmiede verarbeitet nur Einzelbilder (jedes Bild = eine Szene). F&uuml;r Collagen entsteht gerade ein eigenes Zusatz-Tool, das die Panels automatisch in Einzelbilder zerlegt &ndash; bis dahin die Panels selbst zuschneiden und die Bilder einzeln laden.</p></div>
+    <div class="tile"><h4>Ich habe eine Collage statt Einzelbildern &ndash; was nun?</h4><p>Die VideoSchmiede verarbeitet nur Einzelbilder (jedes Bild = eine Szene). Collagen zuerst mit dem <a href="https://adrgrie-lgtm.github.io/Collage-Spalter/" target="_blank" rel="noopener">Collage-Spalter</a> in Einzelbilder zerlegen (Raster oder freies Zuschneiden), dann die Bilder hier laden.</p></div>
     <div class="tile"><h4>Welches Format hat der Export?</h4><p>WebM (VP8/VP9 + Opus) &ndash; das zeichnet der Browser direkt aus der Vorschau-Leinwand mit Ton auf. Viele Schnittprogramme und Plattformen nehmen WebM an; andernfalls konvertiert es jedes kostenlose Konvertierungstool.</p></div>
     <div class="tile"><h4>Zu viele Bilder f&uuml;r einen kurzen Song?</h4><p>Dann k&uuml;rzt die Timeline die Szenenzahl auf das, was der Song hergibt &ndash; sehr kurze Szenen w&uuml;rden sonst nur flackern. Die Info-Zeile im Studio sagt dir vorher, was passieren wird.</p></div>
     <div class="tile"><h4>Verl&auml;sst was meinen Browser?</h4><p>Nein. Bilder, Musik und Rendering bleiben komplett lokal &ndash; kein Upload, kein Server, kein Konto. Der Export entsteht ebenfalls auf deinem Ger&auml;t.</p></div>
@@ -1233,7 +1233,7 @@
   }
 
   function wireZone(zone, input, handler, multi) {
-    zone.addEventListener("click", function () { input.click(); });
+    // Upload: Zone ist ein <label for="..."> – Tap/Klick öffnet den Dialog nativ (auch mobil)
     input.addEventListener("change", function () {
       var fs = input.files;
       if (!fs || !fs.length) return;
@@ -1284,3 +1284,33 @@
   });
   applyMode();
 
+  btnShuffle.addEventListener("click", function () {
+    stopEverything();
+    for (var i = ST.photos.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = ST.photos[i]; ST.photos[i] = ST.photos[j]; ST.photos[j] = tmp;
+    }
+    renderThumbs();
+  });
+  btnClearPhotos.addEventListener("click", function () {
+    stopEverything();
+    ST.photos.forEach(function (p) { URL.revokeObjectURL(p.url); });
+    ST.photos = [];
+    renderThumbs(); updateInfo();
+  });
+
+  btnBuild.addEventListener("click", build);
+  btnPlay.addEventListener("click", function () { if (ST.recording) return; if (ST.playing) { pause(); } else { play(); } });
+  btnRestart.addEventListener("click", function () { if (!ST.TL || ST.recording) return; au.currentTime = 0; play(); });
+  seek.addEventListener("input", function () { if (!ST.TL || ST.recording) return; seekActive = true; });
+  seek.addEventListener("change", function () {
+    if (!ST.TL || ST.recording) return;
+    au.currentTime = (Number(seek.value) / 1000) * ST.TL.D;
+    seekActive = false;
+  });
+  btnRec.addEventListener("click", startRec);
+  btnStopRec.addEventListener("click", finishRec);
+})();
+</script>
+</body>
+</html>
