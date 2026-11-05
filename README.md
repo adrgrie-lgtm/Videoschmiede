@@ -17,3 +17,12 @@ Musikvideo-Studio – komplett lokal im Browser. Verbesserte MuseGen-Vorlage.
 4. „Video exportieren (WebM)“ – der Browser spielt das Video einmal durch und zeichnet es mit Ton auf.
 
 Kein Server, kein Upload, kein Konto, kein Tracking – alles läuft lokal im Browser.
+
+## KI-Feinschliff (November 2026, v2.5)
+
+- **WebM-Dauer-Fix beim Export:** Die echte Spieldauer wird nach der Aufnahme direkt in den WebM-Header geschrieben – viele Spieler und Schnittprogramme melden sonst „unendliche“ Dauer und weigern sich.
+- **Sinnvolle Export-Dateinamen:** songname.webm statt immer musikvideo.webm.
+- **Schnellerer Visual-Stil „Partikel-Strom“:** Glow als wiederverwendetes Sprite statt Gradient pro Partikel und Frame – deutlich weniger Rechenlast, gerade beim Aufnehmen.
+- **Filmkorn wechselt jetzt auch ohne Kamera-Zittern** korrekt zwischen den beiden Korn-Bildern.
+- **Fortschrittsbalken friert nicht mehr ein**, wenn während der Wiedergabe gesucht und dann Play/Pause gedrückt wird.
+- **Bedienung:** Suchleiste und Play-Button haben Aria-Labels (Screenreader).

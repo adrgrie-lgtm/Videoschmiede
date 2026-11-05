@@ -109,7 +109,7 @@
 </style>
 </head>
 <body>
-<!-- VideoSchmiede v2.4 – MuseGen-Vorlage, verbessert: Foto-Serie + Visual-Stile + Comic-Animation (Panel-Pop, Figuren-Boil, Daumenkino) -->
+<!-- VideoSchmiede v2.5 – MuseGen-Vorlage, verbessert: Foto-Serie + Visual-Stile + Comic-Animation (Panel-Pop, Figuren-Boil, Daumenkino) -->
 <header>
   <div class="wrap nav">
     <div class="logo">
@@ -227,9 +227,9 @@
       <h2>2 &middot; Vorschau &amp; Export</h2>
       <canvas id="stage" width="1280" height="720"></canvas>
       <div class="pbar">
-        <button class="btn small" id="btnPlay">&#9654;</button>
+        <button class="btn small" id="btnPlay" aria-label="Wiedergabe starten oder pausieren">&#9654;</button>
         <button class="btn ghost small" id="btnRestart">&#8635;</button>
-        <input type="range" id="seek" min="0" max="1000" value="0" />
+        <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Video-Position suchen" />
         <span class="tlab" id="tLab">0:00 / 0:00</span>
         <span class="slab" id="secLab">&mdash;</span>
         <span class="rec" id="recDot"><i></i>AUFNAHME</span>
@@ -682,6 +682,7 @@
     ensureGraph();
     au.play().then(function () {
       ST.playing = true;
+      seekActive = false;
       btnPlay.innerHTML = "&#10073;&#10073;";
     }).catch(function () {
       infoLine.textContent = "Wiedergabe blockiert \u2013 noch einmal klicken.";
@@ -876,10 +877,14 @@
       if (p.y < -20) p.y = H + 20;
       var radius = p.r * (0.6 + f.bass * 2.4);
       var hue = pal.hueBase + p.hue;
-      var gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, Math.max(1, radius * 4));
-      gr.addColorStop(0, stHsl(hue, 92, 66, 0.85)); gr.addColorStop(1, "transparent");
-      ctx.fillStyle = gr;
-      ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(1, radius * 4), 0, Math.PI * 2); ctx.fill();
+      var r4 = Math.max(1, radius * 4);
+      if (!ST.glowSprite || ST.glowHue !== pal.hueBase) {
+        ST.glowSprite = makeGlowSprite(pal.accent2);
+        ST.glowHue = pal.hueBase;
+      }
+      ctx.globalAlpha = 0.85;
+      ctx.drawImage(ST.glowSprite, p.x - r4, p.y - r4, r4 * 2, r4 * 2);
+      ctx.globalAlpha = 1;
       ctx.fillStyle = stHsl(hue, 95, 78, 0.9);
       ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0.6, radius * 0.5), 0, Math.PI * 2); ctx.fill();
     }
@@ -1212,7 +1217,7 @@
       ctx2.save();
       ctx2.globalAlpha = 0.06;
       ctx2.globalCompositeOperation = "overlay";
-      var g = ST.lastTick % 2 === 0 ? ST.grainA : ST.grainB;
+      var g = (Math.floor(au.currentTime * 8) % 2 === 0) ? ST.grainA : ST.grainB;
       ctx2.drawImage(g, 0, 0, 1280, 720);
       ctx2.restore();
       ctx2.drawImage(ST.vig, 0, 0);
@@ -1242,6 +1247,88 @@
   });
 
   // ---------- Export ----------
+  // ---------- Helfer: Glow-Sprite (Performance) & WebM-Dauer-Fix ----------
+  function makeGlowSprite(color) {
+    var s = document.createElement("canvas");
+    s.width = 64; s.height = 64;
+    var c = s.getContext("2d");
+    var g = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, color); g.addColorStop(1, "transparent");
+    c.fillStyle = g;
+    c.fillRect(0, 0, 64, 64);
+    return s;
+  }
+  // WebM-Dauer-Fix: MediaRecorder schreibt oft "unendlich" als Dauer in den Header.
+  // Der Fix schreibt die echte Spieldauer in das Duration-Element des EBML-Headers,
+  // damit Spieler und Schnittprogramme die Datei sauber laden koennen.
+  function fixWebmDuration(blob, ms) {
+    var HEAD = 262144;
+    if (!blob.slice || !blob.slice(0, HEAD).arrayBuffer) return Promise.resolve(blob);
+    return blob.slice(0, HEAD).arrayBuffer().then(function (buf) {
+      var u8 = new Uint8Array(buf), dv = new DataView(buf);
+      function findPattern(start, pat) {
+        outer: for (var i = start; i + pat.length <= u8.length; i++) {
+          for (var j = 0; j < pat.length; j++) if (u8[i + j] !== pat[j]) continue outer;
+          return i;
+        }
+        return -1;
+      }
+      function readVint(pos) {
+        if (pos >= u8.length) return null;
+        var first = u8[pos];
+        if (!first) return null;
+        var len = 1, mask = 0x80;
+        while (!(first & mask)) { mask >>= 1; len++; if (len > 8) return null; }
+        var val = first & (mask - 1);
+        var unknown = val === (mask - 1);
+        for (var k = 1; k < len; k++) {
+          val = val * 256 + u8[pos + k];
+          unknown = unknown && u8[pos + k] === 0xff;
+        }
+        return { len: len, value: val, unknown: unknown };
+      }
+      function writeVint(pos, len, value) {
+        for (var k = len - 1; k >= 0; k--) {
+          u8[pos + k] = value % 256;
+          value = Math.floor(value / 256);
+        }
+        u8[pos] |= (0x80 >> (len - 1));
+      }
+      var info = findPattern(0, [0x15, 0x49, 0xa9, 0x66]); // SegmentInfo
+      if (info < 0) return blob;
+      var sizeInfo = readVint(info + 4);
+      if (!sizeInfo || sizeInfo.unknown) return blob;
+      var bodyStart = info + 4 + sizeInfo.len;
+      var bodyEnd = bodyStart + sizeInfo.value;
+      if (bodyEnd > u8.length) return blob;
+      var durEl = findPattern(bodyStart, [0x44, 0x89]); // Duration
+      if (durEl >= 0 && durEl + 11 <= bodyEnd) {
+        // vorhanden: nur den Wert patchen
+        dv.setFloat64(durEl + 3, ms, false);
+        return new Blob([buf, blob.slice(HEAD)], { type: "video/webm" });
+      }
+      // fehlt: neues Duration-Element (11 Bytes) nach TimecodeScale einfuegen
+      var insertAt = bodyStart;
+      var tcs = findPattern(bodyStart, [0x2a, 0xd7, 0xb1]); // TimecodeScale
+      if (tcs >= 0 && tcs + 3 <= bodyEnd) {
+        var tcsSize = readVint(tcs + 3);
+        if (tcsSize && tcsSize.value <= 8 && tcs + 3 + tcsSize.len + tcsSize.value <= bodyEnd) {
+          insertAt = tcs + 3 + tcsSize.len + tcsSize.value;
+        }
+      }
+      if (insertAt + 11 > u8.length) return blob;
+      var nv = sizeInfo.value + 11;
+      if (nv > Math.pow(2, 7 * sizeInfo.len) - 1) return blob;
+      writeVint(info + 4, sizeInfo.len, nv);
+      var head2 = new Uint8Array(insertAt + 11);
+      head2.set(u8.subarray(0, insertAt), 0);
+      head2[insertAt] = 0x44; head2[insertAt + 1] = 0x89; head2[insertAt + 2] = 0x88;
+      new DataView(head2.buffer).setFloat64(insertAt + 3, ms, false);
+      head2.set(u8.subarray(insertAt, HEAD), insertAt + 11);
+      return new Blob([head2, blob.slice(HEAD)], { type: "video/webm" });
+    });
+  }
+
   var rec = null, chunks = [];
   function startRec() {
     if (!ST.TL) return;
@@ -1266,9 +1353,26 @@
       rec.onstop = function () {
         if (!chunks.length) return;
         var blob = new Blob(chunks, { type: "video/webm" });
+        var fname = (trackName() || "musikvideo").replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "_");
+        if (!fname) fname = "musikvideo";
+        fname += ".webm";
+        var durMs = (ST.TL && ST.TL.D > 0) ? ST.TL.D * 1000 : (ST.audioDur || 0) * 1000;
         if (dlLink.href) URL.revokeObjectURL(dlLink.href);
-        dlLink.href = URL.createObjectURL(blob);
-        dlLink.classList.add("on");
+        dlLink.classList.remove("on");
+        function deliver(b) {
+          dlLink.href = URL.createObjectURL(b);
+          dlLink.setAttribute("download", fname);
+          dlLink.classList.add("on");
+        }
+        var p = null;
+        try { p = fixWebmDuration(blob, durMs); } catch (e) { p = null; }
+        if (p && p.then) {
+          p.then(function (fixed) {
+            deliver(fixed);
+            infoLine.textContent = "Export fertig: " + fname + " – jetzt speichern.";
+            infoLine.className = "infoline";
+          }, function () { deliver(blob); });
+        } else deliver(blob);
       };
       rec.start(1000);
       ST.recording = true;
